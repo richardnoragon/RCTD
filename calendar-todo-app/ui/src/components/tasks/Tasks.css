@@ -1,0 +1,276 @@
+/* Kanban Board Styles */
+.kanban-board {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1rem;
+  background: #f5f5f5;
+}
+
+.kanban-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.add-column-form {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.add-column-form input {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.kanban-columns {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  height: calc(100% - 50px);
+}
+
+.kanban-column {
+  flex: 0 0 300px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.column-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.delete-column-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #dc3545;
+  padding: 0 0.5rem;
+}
+
+.column-content {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 100px;
+}
+
+/* Dragging styles */
+.task-card-dragging {
+  opacity: 0.5;
+}
+
+.column-content.dropping {
+  background: #e9ecef;
+}
+
+/* Task Calendar View Styles */
+.task-calendar-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.calendar-header button {
+  padding: 0.5rem 1rem;
+  background: var(--fc-button-bg-color, #2C3E50);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.calendar-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 600px;
+  border: 1px solid var(--fc-border-color, #ddd);
+  border-radius: 4px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: var(--fc-neutral-bg-color, #f8f9fa);
+  border-bottom: 1px solid var(--fc-border-color, #ddd);
+}
+
+.weekday {
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: 500;
+  color: var(--fc-neutral-text-color, #6c757d);
+}
+
+.calendar-days {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-template-rows: repeat(6, 1fr);
+}
+
+.calendar-day {
+  border-right: 1px solid var(--fc-border-color, #ddd);
+  border-bottom: 1px solid var(--fc-border-color, #ddd);
+  padding: 0.5rem;
+  min-height: 100px;
+  cursor: pointer;
+}
+
+.calendar-day:hover {
+  background: var(--fc-neutral-bg-color, #f8f9fa);
+}
+
+.calendar-day.other-month {
+  background: var(--fc-neutral-bg-color, #f8f9fa);
+  color: var(--fc-neutral-text-color, #6c757d);
+}
+
+.day-number {
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.day-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.task-indicator {
+  padding: 0.25rem 0.5rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.task-indicator.completed {
+  opacity: 0.7;
+  text-decoration: line-through;
+}
+
+.task-indicator:hover {
+  filter: brightness(1.1);
+}
+
+/* Task List View Styles */
+.task-list-view {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background: #f5f5f5;
+}
+
+.task-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.task-list-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.search-input,
+.status-filter,
+.priority-filter {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.create-task-button {
+  padding: 0.5rem 1rem;
+  background: var(--fc-event-bg-color, #3788d8);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.task-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.no-tasks {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  font-style: italic;
+}
+
+/* Task Form Modal */
+.task-form-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-width: 500px;
+  width: 90%;
+}
