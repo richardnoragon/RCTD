@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Reminder, reminderService } from '../../services/reminderService';
 import './Reminders.css';
 
@@ -65,7 +65,7 @@ export const ReminderManager: React.FC<ReminderManagerProps> = ({
     }
   };
 
-  const handleSaveReminder = async (e: React.FormEvent) => {
+  const handleSaveReminder = async (e: any) => {
     e.preventDefault();
     if (!reminder || !itemType || !itemId) return;
 
@@ -111,27 +111,30 @@ export const ReminderManager: React.FC<ReminderManagerProps> = ({
     }
   };
 
+  const handleOffsetChange = (e: any) => {
+    if (!reminder) return;
+    const minutes = parseInt(e.target.value);
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + minutes);
+    setReminder({
+      ...reminder,
+      trigger_time: now.toISOString(),
+      offset_description: `${minutes} minutes before`
+    });
+  };
+
   return (
     <div className="reminder-manager">
       {itemType && itemId ? (
         <form onSubmit={handleSaveReminder} className="reminder-form">
           <h3>Reminder Settings</h3>
           <div className="form-group">
-            <label>
+            <label htmlFor="offset-select">
               Remind me:
               <select
+                id="offset-select"
                 value={reminder?.offset_description || '15 minutes before'}
-                onChange={(e) => {
-                  if (!reminder) return;
-                  const now = new Date();
-                  const minutes = parseInt(e.target.value);
-                  now.setMinutes(now.getMinutes() + minutes);
-                  setReminder({
-                    ...reminder,
-                    trigger_time: now.toISOString(),
-                    offset_description: `${minutes} minutes before`
-                  });
-                }}
+                onChange={handleOffsetChange}
               >
                 <option value="5">5 minutes before</option>
                 <option value="15">15 minutes before</option>

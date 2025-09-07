@@ -2,14 +2,14 @@ use serde::{Deserialize, Serialize};
 use rusqlite::Row;
 use super::error::DbResult;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Category {
     pub id: Option<i64>,
     pub name: String,
     pub color: String,
     pub symbol: String,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl Category {
@@ -25,7 +25,7 @@ impl Category {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Event {
     pub id: Option<i64>,
     pub title: String,
@@ -37,8 +37,8 @@ pub struct Event {
     pub priority: i32,
     pub category_id: Option<i64>,
     pub recurring_rule_id: Option<i64>,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl Event {
@@ -60,7 +60,7 @@ impl Event {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Task {
     pub id: Option<i64>,
     pub title: String,
@@ -73,8 +73,8 @@ pub struct Task {
     pub kanban_column_id: Option<i64>,
     pub kanban_order: Option<i32>,
     pub completed_at: Option<String>,
-    pub created_at: String,
-    pub updated_at: String,
+    pub created_at: Option<String>,
+    pub updated_at: Option<String>,
 }
 
 impl Task {
@@ -97,20 +97,20 @@ impl Task {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct RecurringRule {
     pub id: Option<i64>,
     pub frequency: String,
-    pub interval: i32,
+    pub interval_value: i32,
     pub days_of_week: Option<String>,
     pub day_of_month: Option<i32>,
     pub month_of_year: Option<i32>,
     pub end_date: Option<String>,
     pub end_occurrences: Option<i32>,
-    pub created_at: String,
+    pub created_at: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct EventException {
     pub id: Option<i64>,
     pub event_id: i64,
@@ -121,7 +121,7 @@ pub struct EventException {
     pub modified_start_time: Option<String>,
     pub modified_end_time: Option<String>,
     pub modified_location: Option<String>,
-    pub created_at: String,
+    pub created_at: Option<String>,
 }
 
 impl EventException {
@@ -146,7 +146,7 @@ impl RecurringRule {
         Ok(RecurringRule {
             id: row.get(0)?,
             frequency: row.get(1)?,
-            interval: row.get(2)?,
+            interval_value: row.get(2)?,
             days_of_week: row.get(3)?,
             day_of_month: row.get(4)?,
             month_of_year: row.get(5)?,
