@@ -5,12 +5,29 @@
     "test": "cd ui && npm test"
   },
   "devDependencies": {
+    "@tauri-apps/api": "^2.8.0",
     "@tauri-apps/cli": "1.5",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@types/jest": "^30.0.0",
     "@types/react": "^18.3.20",
     "@types/react-dom": "^18.3.6",
+    "jest": "^30.1.3",
+    "jest-environment-jsdom": "^30.1.2",
+    "ts-jest": "^29.4.1",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "react-markdown": "^10.1.0"
-  }
+  },
+  "name": "calendar-todo-app",
+  "version": "1.0.0",
+  "description": "A high-performance desktop calendar application built with Rust/Tauri combining event management, Markdown note-taking, and To-Do list management.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

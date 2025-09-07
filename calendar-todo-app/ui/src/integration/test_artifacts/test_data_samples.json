@@ -1,0 +1,85 @@
+{
+  "sampleEvents": [
+    {
+      "id": 1,
+      "title": "Team Meeting",
+      "description": "Weekly team sync meeting",
+      "start_time": "2025-09-07 10:00:00",
+      "end_time": "2025-09-07 11:00:00",
+      "is_all_day": false,
+      "location": "Conference Room A",
+      "priority": 2,
+      "category_id": 1
+    },
+    {
+      "id": 2,
+      "title": "Company Holiday",
+      "description": "Labor Day Holiday",
+      "start_time": "2025-09-01 00:00:00",
+      "end_time": "2025-09-01 23:59:59",
+      "is_all_day": true,
+      "location": "Company Wide",
+      "priority": 1,
+      "category_id": 2
+    },
+    {
+      "id": 3,
+      "title": "Quick Standup",
+      "description": null,
+      "start_time": "2025-09-07 09:00:00",
+      "end_time": "2025-09-07 09:15:00",
+      "is_all_day": false,
+      "location": null,
+      "priority": 3,
+      "category_id": null
+    }
+  ],
+  "bulkTestEvents": [
+    {
+      "title": "Bulk Event 1",
+      "description": "First bulk test event",
+      "start_time": "2025-09-10 09:00:00",
+      "end_time": "2025-09-10 10:00:00",
+      "is_all_day": false,
+      "priority": 1
+    },
+    {
+      "title": "Bulk Event 2", 
+      "description": "Second bulk test event",
+      "start_time": "2025-09-11 14:00:00",
+      "end_time": "2025-09-11 15:00:00",
+      "is_all_day": false,
+      "priority": 2
+    },
+    {
+      "title": "Bulk Event 3",
+      "description": "Third bulk test event", 
+      "start_time": "2025-09-12 16:00:00",
+      "end_time": "2025-09-12 17:00:00",
+      "is_all_day": false,
+      "priority": 3
+    }
+  ],
+  "edgeCaseEvents": [
+    {
+      "title": "Minimal Event",
+      "description": null,
+      "start_time": null,
+      "end_time": null,
+      "is_all_day": false,
+      "location": null,
+      "priority": null,
+      "category_id": null
+    },
+    {
+      "title": "Very Long Event Title That Exceeds Normal Character Limits For Testing Input Validation And Display Handling",
+      "description": "This is a very long description that tests how the system handles large amounts of text data in the description field. It should be truncated appropriately in the UI while maintaining full data integrity in the database. This description continues to test various edge cases around text handling, special characters, and formatting preservation.",
+      "start_time": "2025-12-31 23:59:59",
+      "end_time": "2026-01-01 00:00:01",
+      "is_all_day": false,
+      "location": "Building A, Floor 5, Conference Room 501-B (Large)",
+      "priority": 5,
+      "category_id": 999
+    }
+  ]
+}

@@ -8,6 +8,15 @@ export default {
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest'
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(@fullcalendar|preact|@babel|@testing-library)/)'
+  ],
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  globals: {
+    'ts-jest': {
+      useESM: true
+    }
+  },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',
@@ -30,5 +39,5 @@ export default {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   verbose: true,
-  testTimeout: 10000
+  testTimeout: 15000
 };

@@ -1,0 +1,107 @@
+{
+  "executionId": "date_time_matrix_20250907T151858Z",
+  "startedUtc": "2025-09-07T15:17:38.125Z",
+  "durationMs": 80075,
+  "environment": {
+    "nodeVersion": "v22.14.0",
+    "platform": "win32",
+    "release": "10.0.26100",
+    "arch": "x64",
+    "icuVersion": "76.1",
+    "tzdbProxy": {
+      "supportedTimeZoneCount": 417,
+      "defaultTimeZone": "Europe/Berlin"
+    }
+  },
+  "timezones": [
+    "UTC",
+    "America/New_York",
+    "Europe/Berlin",
+    "Asia/Kolkata",
+    "Australia/Sydney",
+    "Pacific/Apia",
+    "Pacific/Chatham",
+    "Asia/Tehran",
+    "America/Santiago"
+  ],
+  "results": [
+    {
+      "timezone": "UTC",
+      "startedUtc": "2025-09-07T15:17:38.184Z",
+      "durationMs": 9324,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_UTC_20250907T151738Z.log"
+    },
+    {
+      "timezone": "America/New_York",
+      "startedUtc": "2025-09-07T15:17:47.593Z",
+      "durationMs": 8657,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_America_New_York_20250907T151747Z.log"
+    },
+    {
+      "timezone": "Europe/Berlin",
+      "startedUtc": "2025-09-07T15:17:56.290Z",
+      "durationMs": 11046,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_Europe_Berlin_20250907T151756Z.log"
+    },
+    {
+      "timezone": "Asia/Kolkata",
+      "startedUtc": "2025-09-07T15:18:07.380Z",
+      "durationMs": 8216,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_Asia_Kolkata_20250907T151807Z.log"
+    },
+    {
+      "timezone": "Australia/Sydney",
+      "startedUtc": "2025-09-07T15:18:15.646Z",
+      "durationMs": 9581,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_Australia_Sydney_20250907T151815Z.log"
+    },
+    {
+      "timezone": "Pacific/Apia",
+      "startedUtc": "2025-09-07T15:18:25.317Z",
+      "durationMs": 8952,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_Pacific_Apia_20250907T151825Z.log"
+    },
+    {
+      "timezone": "Pacific/Chatham",
+      "startedUtc": "2025-09-07T15:18:34.324Z",
+      "durationMs": 8243,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_Pacific_Chatham_20250907T151834Z.log"
+    },
+    {
+      "timezone": "Asia/Tehran",
+      "startedUtc": "2025-09-07T15:18:42.602Z",
+      "durationMs": 7742,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_Asia_Tehran_20250907T151842Z.log"
+    },
+    {
+      "timezone": "America/Santiago",
+      "startedUtc": "2025-09-07T15:18:50.388Z",
+      "durationMs": 7807,
+      "exitCode": 0,
+      "status": "Pass",
+      "logFile": "C:\\Users\\richardi\\RCTD-1\\calendar-todo-app\\logs\\integration\\date_time\\date_time_matrix_America_Santiago_20250907T151850Z.log"
+    }
+  ],
+  "rollup": {
+    "total": 9,
+    "passed": 9,
+    "failed": 0,
+    "averageDurationMs": 8841
+  }
+}

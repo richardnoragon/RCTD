@@ -1,7 +1,7 @@
-import React from 'react';
 import type { ChangeEvent } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { Category, categoryService } from '../../services/categoryService';
 import { SearchResult, searchService } from '../../services/searchService';
-import { categoryService, Category } from '../../services/categoryService';
 import './Search.css';
 
 interface SearchFilters {
@@ -99,48 +99,65 @@ export function Search(): JSX.Element {  const [query, setQuery] = useState('');
 
       <div className="search-filters">
         <div className="filter-group">
-          <select
-            value={filters.type || ''}            onChange={(e: ChangeEvent<HTMLSelectElement>) => 
-              handleFilterChange('type', e.target.value as SearchFilters['type'] || undefined)}
-          >
-            <option value="">All Types</option>
-            <option value="EVENT">Events</option>
-            <option value="TASK">Tasks</option>
-            <option value="NOTE">Notes</option>
-          </select>
+          <label htmlFor="search-type-select">
+            Search type:
+            <select
+              id="search-type-select"
+              value={filters.type || ''}            
+              onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                handleFilterChange('type', e.target.value as SearchFilters['type'] || undefined)}
+            >
+              <option value="">All Types</option>
+              <option value="EVENT">Events</option>
+              <option value="TASK">Tasks</option>
+              <option value="NOTE">Notes</option>
+            </select>
+          </label>
         </div>
 
         {(filters.type === 'EVENT' || filters.type === 'TASK') && (
           <>
             <div className="filter-group">
-              <select
-                value={filters.categoryId?.toString() || ''}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => 
-                  handleFilterChange('categoryId', Number(e.target.value) || undefined)}
-              >
-                <option value="">All Categories</option>
-                {categories.map((category: Category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              <label htmlFor="search-category-select">
+                Category:
+                <select
+                  id="search-category-select"
+                  value={filters.categoryId?.toString() || ''}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                    handleFilterChange('categoryId', Number(e.target.value) || undefined)}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((category: Category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
 
-              <input
-                type="date"
-                value={filters.startDate || ''}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => 
-                  handleFilterChange('startDate', e.target.value)}
-                placeholder="Start Date"
-              />
+              <label htmlFor="search-start-date">
+                Start Date:
+                <input
+                  id="search-start-date"
+                  type="date"
+                  value={filters.startDate || ''}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => 
+                    handleFilterChange('startDate', e.target.value)}
+                  placeholder="Start Date"
+                />
+              </label>
 
-              <input
-                type="date"
-                value={filters.endDate || ''}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => 
-                  handleFilterChange('endDate', e.target.value)}
-                placeholder="End Date"
-              />
+              <label htmlFor="search-end-date">
+                End Date:
+                <input
+                  id="search-end-date"
+                  type="date"
+                  value={filters.endDate || ''}
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => 
+                    handleFilterChange('endDate', e.target.value)}
+                  placeholder="End Date"
+                />
+              </label>
             </div>
           </>
         )}
@@ -148,29 +165,37 @@ export function Search(): JSX.Element {  const [query, setQuery] = useState('');
         {filters.type === 'TASK' && (
           <>
             <div className="filter-group">
-              <select
-                value={filters.status || ''}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => 
-                  handleFilterChange('status', e.target.value)}
-              >
-                <option value="">All Statuses</option>
-                <option value="PENDING">Pending</option>
-                <option value="IN_PROGRESS">In Progress</option>
-                <option value="COMPLETED">Completed</option>
-              </select>
+              <label htmlFor="search-status-select">
+                Status:
+                <select
+                  id="search-status-select"
+                  value={filters.status || ''}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                    handleFilterChange('status', e.target.value)}
+                >
+                  <option value="">All Statuses</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="IN_PROGRESS">In Progress</option>
+                  <option value="COMPLETED">Completed</option>
+                </select>
+              </label>
 
-              <select
-                value={filters.priority?.toString() || ''}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) => 
-                  handleFilterChange('priority', Number(e.target.value) || undefined)}
-              >
-                <option value="">All Priorities</option>
-                <option value="1">Highest</option>
-                <option value="2">High</option>
-                <option value="3">Medium</option>
-                <option value="4">Low</option>
-                <option value="5">Lowest</option>
-              </select>
+              <label htmlFor="search-priority-select">
+                Priority:
+                <select
+                  id="search-priority-select"
+                  value={filters.priority?.toString() || ''}
+                  onChange={(e: ChangeEvent<HTMLSelectElement>) => 
+                    handleFilterChange('priority', Number(e.target.value) || undefined)}
+                >
+                  <option value="">All Priorities</option>
+                  <option value="1">Highest</option>
+                  <option value="2">High</option>
+                  <option value="3">Medium</option>
+                  <option value="4">Low</option>
+                  <option value="5">Lowest</option>
+                </select>
+              </label>
             </div>
           </>
         )}
