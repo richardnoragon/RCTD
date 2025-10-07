@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom';
+import 'jest-axe/extend-expect';
 
 // Simple and effective Tauri API mocks
 const mockResponses: Record<string, any> = {
@@ -88,7 +89,7 @@ const mockResponses: Record<string, any> = {
 };
 
 const mockInvoke = jest.fn().mockImplementation((command: string) => {
-  if (Object.prototype.hasOwnProperty.call(mockResponses, command)) {
+  if (Object.hasOwn(mockResponses, command)) {
     return Promise.resolve(mockResponses[command]);
   }
   return Promise.resolve(null);

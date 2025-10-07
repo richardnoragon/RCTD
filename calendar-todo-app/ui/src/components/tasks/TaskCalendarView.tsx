@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Task, taskService } from '../../services/taskService';
 import { TaskForm } from './TaskForm';
 import './Tasks.css';
@@ -189,3 +189,5 @@ export const TaskCalendarView: React.FC<TaskCalendarViewProps> = ({
     </div>
   );
 };
+
+export default TaskCalendarView;

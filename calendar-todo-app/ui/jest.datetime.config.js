@@ -1,35 +1,27 @@
 export default {
   testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['<rootDir>/src/tests/integration/datetime/datetime_test_setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/integration/suites/date-time/datetime_test_setup.ts'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
     '^@/(.*)$': '<rootDir>/src/$1'
   },
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest'
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
+      tsconfig: '<rootDir>/tsconfig.datetime.json',
+      useESM: true
+    }]
   },
   // Disable coverage for integration tests to speed up execution
   collectCoverage: false,
   testMatch: [
-    '<rootDir>/src/tests/integration/datetime/**/*.test.ts'
+    '<rootDir>/tests/integration/suites/date-time/**/*.test.ts'
   ],
   testPathIgnorePatterns: [
     '/node_modules/',
     'src/components/',
     'src/services/',
-    'src/tests/unit'
+    'tests/unit'
   ],
   verbose: false,
-  testTimeout: 15000,
-  // Override environment variable setup
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        compilerOptions: {
-          module: 'commonjs',
-          target: 'es2020'
-        }
-      }
-    }
-  }
+  testTimeout: 15000
 };

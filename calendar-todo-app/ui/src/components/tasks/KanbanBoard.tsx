@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import { Task } from '../../services/taskService';
+import React, { useEffect, useState } from 'react';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { KanbanColumn, kanbanService } from '../../services/kanbanService';
+import { Task } from '../../services/taskService';
 import { TaskCard } from './TaskCard';
 import './Tasks.css';
 
@@ -165,3 +165,5 @@ export const KanbanBoard: React.FC<KanbanBoardProps> = ({
     </div>
   );
 };
+
+export default KanbanBoard;

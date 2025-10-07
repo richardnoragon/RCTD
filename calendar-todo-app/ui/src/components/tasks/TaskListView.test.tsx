@@ -230,7 +230,7 @@ describe('TaskListView Component', () => {
       });
 
       // Filter by COMPLETED status
-      const statusFilter = screen.getByDisplayValue('All Statuses');
+  const statusFilter = screen.getByDisplayValue('All Statuses') as HTMLSelectElement;
       await user.selectOptions(statusFilter, 'COMPLETED');
       
       // Should show only completed tasks
@@ -785,15 +785,17 @@ describe('TaskListView Component', () => {
         expect(screen.getByTestId('task-card-1')).toBeInTheDocument();
       });
 
-      const statusFilter = screen.getByDisplayValue('All Statuses');
-      statusFilter.focus();
+  const statusFilterElement = screen.getByDisplayValue('All Statuses');
+  expect(statusFilterElement).toBeInstanceOf(HTMLSelectElement);
+  const statusFilter = statusFilterElement as HTMLSelectElement;
+  statusFilter.focus();
       
       // Use keyboard to select option
       await user.keyboard('{ArrowDown}');
       await user.keyboard('{Enter}');
       
-      // Should trigger filtering
-      expect(statusFilter.value).not.toBe('');
+    // Should trigger filtering
+    expect(statusFilter.value).not.toBe('');
     });
   });
 

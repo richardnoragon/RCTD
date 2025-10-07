@@ -1,9 +1,10 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",  "build": {
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
     "beforeBuildCommand": "npm run build",
     "beforeDevCommand": "npm run dev",
     "devPath": "http://localhost:1420",
-    "distDir": "../dist"
+    "distDir": "../ui/dist"
   },
   "package": {
     "productName": "calendar-todo-app",
@@ -16,7 +17,8 @@
         "all": false,
         "open": true
       }
-    },    "bundle": {
+  },
+  "bundle": {
       "active": true,
       "category": "DeveloperTool",
       "copyright": "",
@@ -27,7 +29,9 @@
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
-        "icons/128x128@2x.png"
+        "icons/128x128@2x.png",
+        "icons/icon.ico",
+        "icons/icon.icns"
       ],
       "identifier": "com.yourusername.calendar-todo-app",
       "longDescription": "",

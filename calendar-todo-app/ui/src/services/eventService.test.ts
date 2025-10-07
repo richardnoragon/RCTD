@@ -1,11 +1,5 @@
-import { Event, eventService } from './eventService';
-
-// Mock setup is handled in setupTests.ts
-declare global {
-  var setMockResponse: (command: string, response: any) => void;
-  var setMockError: (command: string, error: string) => void;
-  var resetMocks: () => void;
-}
+import type { Event } from '../types/Event';
+import { eventService } from './eventService';
 
 describe('Event Service', () => {
   beforeEach(() => {

@@ -1,16 +1,5 @@
 import { invoke } from '@tauri-apps/api/tauri';
-
-export interface Event {
-  id?: number;
-  title: string;
-  description?: string;
-  start_time: string;
-  end_time: string;
-  is_all_day: boolean;
-  location?: string;
-  priority: number;
-  category_id?: number;
-}
+import type { Event } from '../types/Event';
 
 export const eventService = {
   async getEventsInRange(start: string, end: string): Promise<Event[]> {

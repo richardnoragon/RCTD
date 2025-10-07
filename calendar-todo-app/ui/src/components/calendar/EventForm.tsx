@@ -1,8 +1,8 @@
-import React, { useState, useEffect, FormEvent, ChangeEvent } from 'react';
-import { Event } from '../../services/eventService';
+import React, { useState } from 'react';
+import type { Event } from '../../types/Event';
 
-import { RecurringForm } from './RecurringForm';
 import { RecurringRule } from '../../services/recurringService';
+import { RecurringForm } from './RecurringForm';
 
 interface EventFormProps {
   event?: Event & { recurring_rule?: RecurringRule };

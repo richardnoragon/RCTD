@@ -338,10 +338,10 @@ describe('TimeTrackingReport', () => {
     });
 
     test('orders entries by ID', async () => {
-      render(<TimeTrackingReport />);
-      
+      const { container } = render(<TimeTrackingReport />);
+
       await waitFor(() => {
-        const entryTypes = screen.getAllByClass('entry-type');
+        const entryTypes = Array.from(container.querySelectorAll('.entry-type'));
         expect(entryTypes[0]).toHaveTextContent('MANUAL');
         expect(entryTypes[1]).toHaveTextContent('POMODORO');
         expect(entryTypes[2]).toHaveTextContent('COUNTDOWN');

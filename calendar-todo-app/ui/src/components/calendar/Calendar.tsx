@@ -1,16 +1,17 @@
-import * as React from 'react';
-const { useState, useEffect } = React;
-import FullCalendar from '@fullcalendar/react';
-import dayGridPlugin from '@fullcalendar/daygrid';
-import timeGridPlugin from '@fullcalendar/timegrid';
-import listPlugin from '@fullcalendar/list';
-import interactionPlugin from '@fullcalendar/interaction';
-import { EventClickArg, DateSelectArg } from '@fullcalendar/core';
-import { Event, eventService } from '../../services/eventService';
-import { EventForm } from './EventForm';
 import { eventExceptionService } from '@/services/eventExceptionService';
-import { recurringService, RecurringRule } from '@/services/recurringService';
+import { RecurringRule, recurringService } from '@/services/recurringService';
+import { DateSelectArg, EventClickArg } from '@fullcalendar/core';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
+import FullCalendar from '@fullcalendar/react';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import * as React from 'react';
+import { eventService } from '../../services/eventService';
+import type { Event } from '../../types/Event';
+import { EventForm } from './EventForm';
 import { ExceptionForm } from './ExceptionForm';
+const { useState, useEffect } = React;
 
 type CalendarViewType = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { EventException } from '../../services/eventExceptionService';
-import { Event } from '../../services/eventService';
+import type { Event } from '../../types/Event';
 
 interface ExceptionFormProps {
   event: Event;

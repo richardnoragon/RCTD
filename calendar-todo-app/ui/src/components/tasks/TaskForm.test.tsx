@@ -92,12 +92,12 @@ describe('TaskForm Component', () => {
       const mockOnSubmit = jest.fn();
       const mockOnCancel = jest.fn();
 
-      render(<TaskForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      const { container } = render(<TaskForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
       
       const form = screen.getByRole('form');
       expect(form).toHaveClass('task-form');
       
-      const formGroups = screen.getAllByClassName('form-group');
+      const formGroups = container.querySelectorAll('.form-group');
       expect(formGroups).toHaveLength(5); // title, description, due_date, priority, status
       
       const formActions = screen.getByText('Create').parentElement;

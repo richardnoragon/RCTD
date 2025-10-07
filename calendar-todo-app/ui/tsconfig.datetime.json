@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
+  },
+  "include": [
+    "src/test-types.d.ts",
+    "tests/integration/suites/date-time/**/*.ts",
+    "tests/integration/suites/date-time/**/*.tsx",
+    "tests/integration/support/**/*.ts"
+  ]
+}

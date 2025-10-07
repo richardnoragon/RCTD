@@ -1,5 +1,4 @@
-import React, { ReactElement } from 'react';
-import { format, addMonths, addWeeks, addDays } from 'date-fns';
+import { addDays, addMonths, addWeeks, format } from 'date-fns';
 import { useCalendar } from './CalendarContext';
 
 interface CalendarControlsProps {
@@ -81,3 +80,5 @@ export const CalendarControls = ({ onNavigate }: CalendarControlsProps): JSX.Ele
     </div>
   );
 };
+
+export default CalendarControls;

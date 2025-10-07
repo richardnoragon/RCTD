@@ -1,16 +1,15 @@
-import { useState, useCallback, Fragment, useEffect } from 'react';
-import type { FC, PropsWithChildren } from 'react';
-import { CalendarProvider } from './components/calendar/CalendarContext';
+import { useCallback, useEffect, useState } from 'react';
+import './App.css';
 import { Calendar } from './components/calendar/Calendar';
+import './components/calendar/Calendar.css';
+import { CalendarProvider } from './components/calendar/CalendarContext';
 import CalendarControls from './components/calendar/CalendarControls';
+import { Search } from './components/search/Search';
 import KanbanBoard from './components/tasks/KanbanBoard';
 import TaskCalendarView from './components/tasks/TaskCalendarView';
 import TaskListView from './components/tasks/TaskListView';
-import { Search } from './components/search/Search';
-import { Task, taskService } from './services/taskService';
-import './components/calendar/Calendar.css';
 import './components/tasks/Tasks.css';
-import './App.css';
+import { Task, taskService } from './services/taskService';
 
 type View = 'calendar' | 'tasks' | 'search';
 type TaskView = 'kanban' | 'calendar' | 'list';
@@ -59,97 +58,110 @@ function App(): JSX.Element {
     loadTasks();
   }, [loadTasks]);
 
-  const content = (
-    <div className="app">
-      <div className="app-header">
-        <div className="view-selector">
-          <button 
-            className={currentView === 'calendar' ? 'active' : ''} 
-            onClick={() => setCurrentView('calendar')}
-          >
-            Calendar
-          </button>
-          <button 
-            className={currentView === 'tasks' ? 'active' : ''} 
-            onClick={() => setCurrentView('tasks')}
-          >
-            Tasks
-          </button>
-          <button 
-            className={currentView === 'search' ? 'active' : ''} 
-            onClick={() => setCurrentView('search')}
-          >
-            Search
-          </button>
-        </div>
+  const renderTasksView = (): JSX.Element | null => {
+    switch (currentTaskView) {
+      case 'kanban':
+        return (
+          <KanbanBoard
+            tasks={tasks}
+            onTaskUpdate={handleTaskUpdate}
+            onTaskDelete={handleTaskDelete}
+          />
+        );
+      case 'calendar':
+        return (
+          <TaskCalendarView
+            onTaskUpdate={handleTaskUpdate}
+            onTaskDelete={handleTaskDelete}
+          />
+        );
+      case 'list':
+        return (
+          <TaskListView
+            onTaskUpdate={handleTaskUpdate}
+            onTaskDelete={handleTaskDelete}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
-        {currentView === 'tasks' && (
-          <div className="task-view-selector">
-            <button
-              className={currentTaskView === 'kanban' ? 'active' : ''}
-              onClick={() => setCurrentTaskView('kanban')}
-            >
-              Kanban Board
-            </button>
-            <button
-              className={currentTaskView === 'calendar' ? 'active' : ''}
-              onClick={() => setCurrentTaskView('calendar')}
-            >
-              Calendar View
-            </button>
-            <button
-              className={currentTaskView === 'list' ? 'active' : ''}
-              onClick={() => setCurrentTaskView('list')}
-            >
-              List View
-            </button>
-          </div>
-        )}
-      </div>
-      
-      {currentView === 'calendar' ? (
+  const renderCurrentView = (): JSX.Element => {
+    if (currentView === 'calendar') {
+      return (
         <>
           <CalendarControls />
           <Calendar />
         </>
-      ) : currentView === 'search' ? (
-        <Search />
+      );
+    }
+
+    if (currentView === 'search') {
+      return <Search />;
+    }
+
+    return renderTasksView();
+  };
+
+  return (
+    <CalendarProvider>
+      {isLoading ? (
+        <div className="loading-container">
+          <p>Loading application...</p>
+        </div>
       ) : (
-        <>
-          {currentTaskView === 'kanban' && (
-            <KanbanBoard
-              tasks={tasks}
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-            />
-          )}
-          {currentTaskView === 'calendar' && (
-            <TaskCalendarView
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-            />
-          )}
-          {currentTaskView === 'list' && (
-            <TaskListView
-              onTaskUpdate={handleTaskUpdate}
-              onTaskDelete={handleTaskDelete}
-            />
-          )}
-        </>
-      )}
-    </div>
-  );  return (    
-    <CalendarProvider children={
-      <Fragment>
-        {isLoading ? (
-          <div className="loading-container">
-            <p>Loading application...</p>
+        <div className="app">
+          <div className="app-header">
+            <div className="view-selector">
+              <button
+                className={currentView === 'calendar' ? 'active' : ''}
+                onClick={() => setCurrentView('calendar')}
+              >
+                Calendar
+              </button>
+              <button
+                className={currentView === 'tasks' ? 'active' : ''}
+                onClick={() => setCurrentView('tasks')}
+              >
+                Tasks
+              </button>
+              <button
+                className={currentView === 'search' ? 'active' : ''}
+                onClick={() => setCurrentView('search')}
+              >
+                Search
+              </button>
+            </div>
+
+            {currentView === 'tasks' && (
+              <div className="task-view-selector">
+                <button
+                  className={currentTaskView === 'kanban' ? 'active' : ''}
+                  onClick={() => setCurrentTaskView('kanban')}
+                >
+                  Kanban Board
+                </button>
+                <button
+                  className={currentTaskView === 'calendar' ? 'active' : ''}
+                  onClick={() => setCurrentTaskView('calendar')}
+                >
+                  Calendar View
+                </button>
+                <button
+                  className={currentTaskView === 'list' ? 'active' : ''}
+                  onClick={() => setCurrentTaskView('list')}
+                >
+                  List View
+                </button>
+              </div>
+            )}
           </div>
-        ) : (
-          content
-        )}
-      </Fragment>
-    } />
+
+          {renderCurrentView()}
+        </div>
+      )}
+    </CalendarProvider>
   );
 }
 

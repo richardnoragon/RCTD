@@ -1,7 +1,7 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Task, taskService } from '../../services/taskService';
-import { TaskForm } from './TaskForm';
 import { TaskCard } from './TaskCard';
+import { TaskForm } from './TaskForm';
 import './Tasks.css';
 
 interface TaskListViewProps {
@@ -151,3 +151,5 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
     </div>
   );
 };
+
+export default TaskListView;

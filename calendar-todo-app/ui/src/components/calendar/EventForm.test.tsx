@@ -1,16 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Event } from '../../services/eventService';
 import { RecurringRule } from '../../services/recurringService';
+import type { Event } from '../../types/Event';
 import { EventForm } from './EventForm';
-
-// Mock setup is handled in setupTests.ts
-declare global {
-  var setMockResponse: (command: string, response: any) => void;
-  var setMockError: (command: string, error: string) => void;
-  var resetMocks: () => void;
-  var mockTauriInvoke: jest.MockedFunction<any>;
-}
 
 // Mock the RecurringForm component
 jest.mock('./RecurringForm', () => {

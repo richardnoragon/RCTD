@@ -4,14 +4,6 @@ import { addDays, addMonths, addWeeks, format } from 'date-fns';
 import { CalendarProvider, useCalendar } from './CalendarContext';
 import { CalendarControls } from './CalendarControls';
 
-// Mock setup is handled in setupTests.ts
-declare global {
-  var setMockResponse: (command: string, response: any) => void;
-  var setMockError: (command: string, error: string) => void;
-  var resetMocks: () => void;
-  var mockTauriInvoke: jest.MockedFunction<any>;
-}
-
 // Mock date-fns to have predictable testing
 jest.mock('date-fns', () => {
   const actual = jest.requireActual('date-fns');

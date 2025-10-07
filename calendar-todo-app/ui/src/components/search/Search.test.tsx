@@ -1,7 +1,6 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { SearchResult, searchService } from '../../services/searchService';
 import { Search } from './Search';
-import { searchService } from '../../services/searchService';
 
 jest.mock('../../services/searchService');
 
@@ -29,7 +28,7 @@ describe('Search Component', () => {
   });
 
   test('displays search results', async () => {
-    const mockResults = [
+    const mockResults: SearchResult[] = [
       { id: 1, title: 'Test Event', itemType: 'EVENT', description: 'Test Description' }
     ];
     jest.spyOn(searchService, 'searchAll').mockResolvedValue(mockResults);
