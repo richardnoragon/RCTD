@@ -1,147 +1,96 @@
-# How to Run Project in Development Environment
-
-richardnoragon: @workspace  please provide me with a detailed list of how i can run this project in the development enviroment
-
-Workspace: Collecting workspace information# Running the Calendar-Todo App in Development Environment
-
-Based on your workspace, here's a detailed guide to run this Tauri-based calendar and todo application in the development environment:
+# Development Environment Setup
 
 ## Prerequisites
 
-1. Ensure you have Rust installed
-   - Check with `rustc --version`
-   - If not installed, visit [rustup.rs](https://rustup.rs) to install
+1. Install Rust and Cargo.
+2. Install Node.js and npm.
+3. Verify installations:
 
-2. Make sure Node.js and npm are installed
-   - Check with `node --version` and `npm --version`
+```sh
+rustc --version
+cargo --version
+node --version
+npm --version
+```
 
-## Setup Steps
+## Initial Setup
 
-1. Navigate to the project directory:
+1. Move to the application root:
 
-   ```sh
-   cd calendar-todo-app
-   ```
+```sh
+cd calendar-todo-app
+```
 
-2. Install the UI dependencies:
+2. Install frontend dependencies:
 
-   ```sh
-   cd ui
-   npm install
-   cd ..
-   ```
+```sh
+cd ui
+npm install
+cd ..
+```
 
-3. Run the database migrations (if not already done):
+## Run In Development
 
-   ```sh
-   # The migrations in the migrations/ folder should run automatically
-   # on first start, but you can manually apply them if needed
-   ```
+### Standard Run
 
-## Running the Development Environment
+```sh
+cd calendar-todo-app
+cargo tauri dev
+```
 
-### Method 1: Using Tauri CLI
+### Run With Observability Timing Logs
 
-1. From the project root directory:
+```sh
+cd calendar-todo-app
+RCTD_OBSERVABILITY_LEVEL=debug cargo tauri dev
+```
 
-   ```sh
-   cd calendar-todo-app
-   cargo tauri dev
-   ```
-
-2. (Optional) Enable verbose observability timing for backend command diagnostics:
-
-   ```sh
-   cd calendar-todo-app
-   RCTD_OBSERVABILITY_LEVEL=debug cargo tauri dev
-   ```
-
-   This will:
-   - Start the frontend dev server (Vite)
-   - Build and run the Rust backend
-   - Launch the application in development mode
-
-### Method 2: Separate Frontend and Backend
-
-1. Start the frontend development server:
-
-   ```sh
-   cd calendar-todo-app/ui
-   npm run dev
-   ```
-
-2. In another terminal, start the Tauri app:
-
-   ```sh
-   cd calendar-todo-app
-   cargo tauri dev
-   ```
+`RCTD_OBSERVABILITY_LEVEL` supports `error`, `warn`, `info`, and `debug`.
 
 ## Testing
 
-To run the tests:
+Frontend tests:
 
-1. Frontend tests:
+```sh
+cd calendar-todo-app/ui
+npm run test
+```
 
-   ```sh
-   cd calendar-todo-app/ui
-   npm run test
-   ```
+Accessibility tests:
 
-2. Accessibility tests:
+```sh
+cd calendar-todo-app/ui
+npm run test:a11y
+```
 
-   ```sh
-   cd calendar-todo-app/ui
-   npm run test:a11y
-   ```
+Backend tests:
 
-3. Backend (Rust) tests:
-
-   ```sh
-   cd calendar-todo-app
-   cargo test
-   ```
+```sh
+cd calendar-todo-app
+cargo test
+```
 
 ## Observability Verification
 
-Use this quick check after launch:
-
-1. Open a task list or kanban column in the app UI.
-2. Confirm frontend console logs include `RCTD_UI_FETCH_START` and `RCTD_UI_FETCH_TIMING`.
-3. Confirm backend terminal logs include JSON entries with:
+1. Open a task list view or Kanban column in the app.
+2. In the frontend console, verify `RCTD_UI_FETCH_START` and `RCTD_UI_FETCH_TIMING` events.
+3. In the backend terminal, verify JSON logs containing:
    - `event: tauri_command_start`
    - `event: tauri_command_timing`
-   - matching `trace_id` values when trace propagation is enabled.
+   - matching `trace_id` values for correlated calls.
 
-Optional toggles in browser devtools:
+Optional frontend runtime toggles in devtools:
 
 ```js
 globalThis.__RCTD_UI_TIMING_ENABLED = true;
 globalThis.__RCTD_TRACE_PROPAGATION_ENABLED = true;
 ```
 
-## Building for Production
-
-To build the application for production:
+## Production Build
 
 ```sh
 cd calendar-todo-app
 cargo tauri build
 ```
 
-This will create distributable packages in the `calendar-todo-app/src-tauri/target/release` directory.
-
-## Configuration Files
-
-- Frontend configuration: vite.config.ts
-- Tauri configuration: tauri.conf.json
-- Rust dependencies: Cargo.toml
-
-The project appears to have completed all core features through Phase 8, with documentation and performance optimization remaining to be implemented.
-
-cd calendar-todo-app
-npx tauri dev
-
-PS C:\Users\HP1\Dev\RCTD> npx vite --port 1420
-
- cd ui && npx vite --port 1420 brings errors
+Build artifacts are produced under `calendar-todo-app/src-tauri/target/release`.

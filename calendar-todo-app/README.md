@@ -17,11 +17,11 @@ Issue #2 introduces structured timing logs for key Tauri task commands and UI ta
 ### Backend command timing (Tauri)
 
 - Instrumented commands:
-	- `get_tasks`
-	- `get_tasks_in_column`
+- `get_tasks`
+- `get_tasks_in_column`
 - Log events:
-	- `tauri_command_start` (DEBUG)
-	- `tauri_command_timing` (INFO)
+- `tauri_command_start` (DEBUG)
+- `tauri_command_timing` (INFO)
 - Payload fields include `command`, `trace_id`, `duration_ms`, and command metadata.
 
 ### Backend log level control
@@ -49,8 +49,8 @@ RCTD_OBSERVABILITY_LEVEL=debug cargo tauri dev
 
 - `taskService.getTasks` and `taskService.getTasksInColumn` now use a timed invoke wrapper.
 - UI emits console events:
-	- `RCTD_UI_FETCH_START`
-	- `RCTD_UI_FETCH_TIMING`
+- `RCTD_UI_FETCH_START`
+- `RCTD_UI_FETCH_TIMING`
 - Trace context is propagated to Tauri commands (as `traceContext`) outside Jest test runtime.
 
 Optional runtime overrides via global flags:
