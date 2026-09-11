@@ -49,6 +49,13 @@ Based on your workspace, here's a detailed guide to run this Tauri-based calenda
    cargo tauri dev
    ```
 
+2. (Optional) Enable verbose observability timing for backend command diagnostics:
+
+   ```sh
+   cd calendar-todo-app
+   RCTD_OBSERVABILITY_LEVEL=debug cargo tauri dev
+   ```
+
    This will:
    - Start the frontend dev server (Vite)
    - Build and run the Rust backend
@@ -94,6 +101,24 @@ To run the tests:
    cd calendar-todo-app
    cargo test
    ```
+
+## Observability Verification
+
+Use this quick check after launch:
+
+1. Open a task list or kanban column in the app UI.
+2. Confirm frontend console logs include `RCTD_UI_FETCH_START` and `RCTD_UI_FETCH_TIMING`.
+3. Confirm backend terminal logs include JSON entries with:
+   - `event: tauri_command_start`
+   - `event: tauri_command_timing`
+   - matching `trace_id` values when trace propagation is enabled.
+
+Optional toggles in browser devtools:
+
+```js
+globalThis.__RCTD_UI_TIMING_ENABLED = true;
+globalThis.__RCTD_TRACE_PROPAGATION_ENABLED = true;
+```
 
 ## Building for Production
 
