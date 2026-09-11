@@ -1,7 +1,8 @@
-import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import './App.css';
 import { CalendarProvider } from './components/calendar/CalendarContext';
 import { Task, taskService } from './services/taskService';
+import { markStartupPhase, measureStartupPhase, scheduleIdleTask } from './services/startupMetrics';
 
 const Calendar = lazy(() => import('./components/calendar/Calendar'));
 const CalendarControls = lazy(() => import('./components/calendar/CalendarControls'));
@@ -22,10 +23,12 @@ function App(): JSX.Element {
     </div>
   );
 
+  const startupPhaseRegistered = useRef(false);
+
   const [currentView, setCurrentView] = useState<View>('calendar');
   const [currentTaskView, setCurrentTaskView] = useState<TaskView>('kanban');
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isTaskLoading, setIsTaskLoading] = useState<boolean>(true);
+  const [isTaskLoading, setIsTaskLoading] = useState<boolean>(false);
 
   const loadTasks = useCallback(async () => {
     try {
@@ -60,9 +63,33 @@ function App(): JSX.Element {
     }
   };
 
-  // Add useEffect to load tasks when component mounts
   useEffect(() => {
-    loadTasks();
+    if (startupPhaseRegistered.current) {
+      return;
+    }
+
+    startupPhaseRegistered.current = true;
+    markStartupPhase('app_bootstrap_start');
+    markStartupPhase('app_shell_rendered');
+    measureStartupPhase('startup_shell_ready', 'app_bootstrap_start', 'app_shell_rendered');
+
+    scheduleIdleTask(() => {
+      markStartupPhase('task_bootstrap_start');
+      void (async () => {
+        setIsTaskLoading(true);
+        try {
+          await loadTasks();
+          markStartupPhase('task_bootstrap_complete');
+          measureStartupPhase(
+            'startup_idle_task_load',
+            'task_bootstrap_start',
+            'task_bootstrap_complete'
+          );
+        } finally {
+          setIsTaskLoading(false);
+        }
+      })();
+    });
   }, [loadTasks]);
 
   const renderTasksView = (): JSX.Element | null => {

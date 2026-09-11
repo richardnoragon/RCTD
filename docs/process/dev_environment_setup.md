@@ -167,6 +167,26 @@ cargo test query_optimization_tests -- --nocapture
 
 This suite uses `EXPLAIN QUERY PLAN` to verify index usage on event-range and task-order/status hot-path queries.
 
+## Startup Cold-Path Optimization (Issue #7)
+
+The frontend now defers non-critical task bootstrap until the browser idle phase and logs startup timing milestones for shell readiness and task hydration. The app shell therefore renders before background task hydration begins, reducing perceived startup latency without blocking navigation.
+
+Relevant files:
+
+- `ui/src/App.tsx`
+- `ui/src/services/startupMetrics.ts`
+- `ui/scripts/check-startup-budget.mjs`
+- `ui/startup-budget.json`
+
+Local checks:
+
+```sh
+cd calendar-todo-app/ui
+npm run startup:check
+```
+
+The startup budget script validates current startup thresholds against a benchmark snapshot and writes `dist/startup-budget-report.json`.
+
 ## Production Build
 
 ```sh

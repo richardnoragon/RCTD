@@ -148,6 +148,30 @@ Issue #5 extends the route-level split by hardening lazy boundary behavior and l
 - Task loading indicators are scoped to Task route content only.
 - Navigation remains interactive while deferred modules and task data load.
 
+## Startup Cold-Path Optimization
+
+Issue #7 reduces time to interactive UI by deferring non-critical task hydration until the browser idle phase and by exposing startup timing milestones for shell readiness and task bootstrap.
+
+### What changed
+
+- App shell render is no longer blocked by the initial task fetch.
+- Task bootstrap is scheduled via the idle callback path when available.
+- Startup phases are reported through `RCTD_STARTUP_PHASE` timing logs.
+- A startup budget check script validates the shell and overall startup targets: `npm run startup:check`.
+
+### Files
+
+- `ui/src/App.tsx`
+- `ui/src/services/startupMetrics.ts`
+- `ui/scripts/check-startup-budget.mjs`
+- `ui/startup-budget.json`
+
+### Why it helps
+
+- The UI becomes usable immediately when the shell renders.
+- Non-critical task hydration runs after initial paint, reducing cold-start perception.
+- Timing snapshots can be compared against the startup budget to catch regressions.
+
 ## Backend SQLite Query Optimization
 
 Issue #6 improves backend query performance by making hot-path SQL index-friendly and deterministic.
