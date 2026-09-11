@@ -120,6 +120,21 @@ Expected outcomes:
 2. Build output includes vendor chunks (`vendor-fullcalendar`, `vendor-react`, `vendor-dnd`, `vendor-tauri`).
 3. Bundle budget report passes under the configured hard limits.
 
+## Lazy Loading Boundaries (Issue #5)
+
+Lazy boundary validation from `calendar-todo-app/ui`:
+
+```sh
+npm run build
+```
+
+Runtime checks in dev mode:
+
+1. Start the app and confirm the main shell renders immediately.
+2. Switch between Calendar, Tasks, and Search views and verify each view shows a localized loading state when needed.
+3. Confirm Tasks loading state does not block the header or view selector controls.
+4. Confirm lazy chunks appear in build output for Calendar, Search, Kanban, Task Calendar, and Task List modules.
+
 ## Observability Verification
 
 1. Open a task list view or Kanban column in the app.

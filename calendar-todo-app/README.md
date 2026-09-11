@@ -131,3 +131,19 @@ Then review:
 
 - Vite build output for split chunks.
 - `dist/bundle-budget-report.md` for budget status.
+
+## Lazy Loading Boundaries
+
+Issue #5 extends the route-level split by hardening lazy boundary behavior and loading UX.
+
+### Boundary behavior
+
+- Calendar, Search, and Tasks routes are dynamically imported.
+- Task sub-views (Kanban, Task Calendar, Task List) are also lazy-loaded.
+- View-level `Suspense` fallbacks are used so each route can resolve independently.
+
+### Non-blocking shell behavior
+
+- The app shell now renders immediately instead of waiting on task fetch completion.
+- Task loading indicators are scoped to Task route content only.
+- Navigation remains interactive while deferred modules and task data load.

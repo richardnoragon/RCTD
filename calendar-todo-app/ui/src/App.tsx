@@ -16,26 +16,26 @@ type View = 'calendar' | 'tasks' | 'search';
 type TaskView = 'kanban' | 'calendar' | 'list';
 
 function App(): JSX.Element {
-    const renderLoadingState = (message: string): JSX.Element => (
-      <div className="loading-container">
-        <p>{message}</p>
-      </div>
-    );
+  const renderLoadingState = (message: string): JSX.Element => (
+    <div className="loading-container">
+      <p>{message}</p>
+    </div>
+  );
 
   const [currentView, setCurrentView] = useState<View>('calendar');
   const [currentTaskView, setCurrentTaskView] = useState<TaskView>('kanban');
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isTaskLoading, setIsTaskLoading] = useState<boolean>(true);
 
   const loadTasks = useCallback(async () => {
     try {
-      setIsLoading(true);
+      setIsTaskLoading(true);
       const loadedTasks = await taskService.getTasks();
       setTasks(loadedTasks);
     } catch (error) {
       console.error('Failed to load tasks:', error);
     } finally {
-      setIsLoading(false);
+      setIsTaskLoading(false);
     }
   }, []);
 
@@ -114,68 +114,64 @@ function App(): JSX.Element {
       );
     }
 
-    return (
-      <Suspense fallback={renderLoadingState('Loading tasks view...')}>
-        {renderTasksView()}
-      </Suspense>
-    );
+    if (isTaskLoading) {
+      return renderLoadingState('Loading tasks...');
+    }
+
+    return <Suspense fallback={renderLoadingState('Loading tasks view...')}>{renderTasksView()}</Suspense>;
   };
 
   return (
     <CalendarProvider>
-      {isLoading ? (
-        renderLoadingState('Loading application...')
-      ) : (
-        <div className="app">
-          <div className="app-header">
-            <div className="view-selector">
-              <button
-                className={currentView === 'calendar' ? 'active' : ''}
-                onClick={() => setCurrentView('calendar')}
-              >
-                Calendar
-              </button>
-              <button
-                className={currentView === 'tasks' ? 'active' : ''}
-                onClick={() => setCurrentView('tasks')}
-              >
-                Tasks
-              </button>
-              <button
-                className={currentView === 'search' ? 'active' : ''}
-                onClick={() => setCurrentView('search')}
-              >
-                Search
-              </button>
-            </div>
-
-            {currentView === 'tasks' && (
-              <div className="task-view-selector">
-                <button
-                  className={currentTaskView === 'kanban' ? 'active' : ''}
-                  onClick={() => setCurrentTaskView('kanban')}
-                >
-                  Kanban Board
-                </button>
-                <button
-                  className={currentTaskView === 'calendar' ? 'active' : ''}
-                  onClick={() => setCurrentTaskView('calendar')}
-                >
-                  Calendar View
-                </button>
-                <button
-                  className={currentTaskView === 'list' ? 'active' : ''}
-                  onClick={() => setCurrentTaskView('list')}
-                >
-                  List View
-                </button>
-              </div>
-            )}
+      <div className="app">
+        <div className="app-header">
+          <div className="view-selector">
+            <button
+              className={currentView === 'calendar' ? 'active' : ''}
+              onClick={() => setCurrentView('calendar')}
+            >
+              Calendar
+            </button>
+            <button
+              className={currentView === 'tasks' ? 'active' : ''}
+              onClick={() => setCurrentView('tasks')}
+            >
+              Tasks
+            </button>
+            <button
+              className={currentView === 'search' ? 'active' : ''}
+              onClick={() => setCurrentView('search')}
+            >
+              Search
+            </button>
           </div>
 
-          {renderCurrentView()}
+          {currentView === 'tasks' && (
+            <div className="task-view-selector">
+              <button
+                className={currentTaskView === 'kanban' ? 'active' : ''}
+                onClick={() => setCurrentTaskView('kanban')}
+              >
+                Kanban Board
+              </button>
+              <button
+                className={currentTaskView === 'calendar' ? 'active' : ''}
+                onClick={() => setCurrentTaskView('calendar')}
+              >
+                Calendar View
+              </button>
+              <button
+                className={currentTaskView === 'list' ? 'active' : ''}
+                onClick={() => setCurrentTaskView('list')}
+              >
+                List View
+              </button>
+            </div>
+          )}
         </div>
-      )}
+
+        {renderCurrentView()}
+      </div>
     </CalendarProvider>
   );
 }
