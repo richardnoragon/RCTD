@@ -17,8 +17,30 @@
 
 ## Strategic Development Priorities
 
-1. **Bundle Optimisation** – Address the ~574 kB Vite warning with route-based code splitting or manual chunk definitions.
-2. **Suite Expansion** – Add additional integration suites (e.g., notifications, recurring events) under `ui/tests/integration/suites` and wire them into CI.
-3. **Runtime Observability** – Introduce structured logging/telemetry within Tauri commands to surface errors captured by the UI mocks.
-4. **Documentation Depth** – Extend `docs/product` and `docs/process` with user-facing release notes, CI execution guides, and links to generated build artifacts.
-5. **State Management Hardening** – Layer optimistic UI and error states around Kanban and Task Calendar interactions to match production expectations.
+### Roadmap Group A (Sprint Performance 1, Weeks 1-2)
+
+1. Build bundle-size governance in CI: https://github.com/richardnoragon/RCTD/issues/3
+2. Implement route-level code splitting and manual chunks: https://github.com/richardnoragon/RCTD/issues/4
+3. Add lazy-loading boundaries for major feature modules: https://github.com/richardnoragon/RCTD/issues/5
+4. Profile and optimize backend SQLite hot queries: https://github.com/richardnoragon/RCTD/issues/6
+5. Add structured timing observability for Tauri + UI fetches: https://github.com/richardnoragon/RCTD/issues/2
+
+### Roadmap Group B (Sprint Performance 2, Weeks 3-4)
+
+1. Measure and optimize cold-start path for Tauri + UI bootstrap: https://github.com/richardnoragon/RCTD/issues/7
+2. Virtualize dense list/calendar views for large datasets: https://github.com/richardnoragon/RCTD/issues/8
+3. Add SQLite FTS-backed search indexing path: https://github.com/richardnoragon/RCTD/issues/9
+4. Add performance regression integration suite and reporting artifacts: https://github.com/richardnoragon/RCTD/issues/10
+
+### Implementation Notes
+
+- All created issues include suggested labels and milestone tags inside issue bodies for consistent triage.
+- Group A is ordered to establish guardrails and immediate wins before deeper optimization work.
+- Group B depends on Group A instrumentation and baseline measurements.
+- Milestone links:
+- Sprint 1 milestone: https://github.com/richardnoragon/RCTD/milestone/1
+- Sprint 2 milestone: https://github.com/richardnoragon/RCTD/milestone/2
+
+### Next Theme Queue
+
+- After the performance track above, the next roadmap theme selected is Task/Kanban UX improvements.
