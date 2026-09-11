@@ -40,6 +40,7 @@
 - Issue #3 implementation is now in place via `.github/workflows/bundle-budget-gate.yml` and the UI bundle checker script/config.
 - Issue #4 implementation is now in place via route-level lazy loading in `ui/src/App.tsx` and manual chunking in `ui/vite.config.ts`.
 - Issue #5 implementation is now in place via lazy boundary hardening and non-blocking shell rendering in `ui/src/App.tsx`.
+- Issue #6 implementation is now in place via backend query rewrites in `src/services/event_service.rs`, `src/services/task_service.rs`, `src/services/search_service.rs`, index rollout in `migrations/003_query_optimization_indexes.sql` and `src/db/mod.rs`, and query-plan tests in `src/tests/query_optimization_tests.rs`.
 - Milestone links:
 - Sprint 1 milestone: [Milestone 1](https://github.com/richardnoragon/RCTD/milestone/1)
 - Sprint 2 milestone: [Milestone 2](https://github.com/richardnoragon/RCTD/milestone/2)

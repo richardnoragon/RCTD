@@ -49,6 +49,7 @@ impl Database {
         let migration_sql = fs::read_to_string(migration_path)?;
         
         self.conn.execute_batch(&migration_sql)?;
+        self.apply_performance_indexes()?;
         
         Ok(())
     }
@@ -59,7 +60,26 @@ impl Database {
 
         // Execute in-memory schema for testing
         self.conn.execute_batch(&Self::get_test_schema())?;
+        self.apply_performance_indexes()?;
         
+        Ok(())
+    }
+
+    fn apply_performance_indexes(&self) -> Result<()> {
+        self.conn.execute_batch(
+            r#"
+            CREATE INDEX IF NOT EXISTS idx_events_time_window ON events(start_time, end_time);
+            CREATE INDEX IF NOT EXISTS idx_events_category_start ON events(category_id, start_time);
+
+            CREATE INDEX IF NOT EXISTS idx_tasks_status_order ON tasks(status, kanban_order, id);
+            CREATE INDEX IF NOT EXISTS idx_tasks_column_order ON tasks(kanban_column_id, kanban_order, id);
+            CREATE INDEX IF NOT EXISTS idx_tasks_due_order ON tasks(due_date, kanban_order, id);
+            CREATE INDEX IF NOT EXISTS idx_tasks_category_due ON tasks(category_id, due_date);
+
+            CREATE INDEX IF NOT EXISTS idx_notes_created_at ON notes(created_at);
+            "#,
+        )?;
+
         Ok(())
     }
 
@@ -131,6 +151,14 @@ impl Database {
             FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
             FOREIGN KEY (recurring_rule_id) REFERENCES recurring_rules(id) ON DELETE SET NULL,
             FOREIGN KEY (kanban_column_id) REFERENCES kanban_columns(id) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            content TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
         INSERT OR IGNORE INTO kanban_columns (name, position) VALUES

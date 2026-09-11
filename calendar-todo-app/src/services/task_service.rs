@@ -30,7 +30,9 @@ pub async fn get_tasks_in_range(
                 recurring_rule_id, kanban_column_id, kanban_order, completed_at,
                 created_at, updated_at
          FROM tasks 
-         WHERE (due_date BETWEEN ?1 AND ?2) OR (due_date IS NULL)"
+            WHERE due_date BETWEEN ?1 AND ?2
+                OR due_date IS NULL
+            ORDER BY due_date ASC, kanban_order ASC, id ASC"
     ).map_err(|e| e.to_string())?;
     
     let tasks = stmt
@@ -66,8 +68,8 @@ pub async fn get_tasks_by_status(
                 recurring_rule_id, kanban_column_id, kanban_order, completed_at,
                 created_at, updated_at
          FROM tasks 
-         WHERE status = ?
-         ORDER BY kanban_order ASC"
+            WHERE status = ?1
+            ORDER BY kanban_order ASC, id ASC"
     ).map_err(|e| e.to_string())?;
     
     let tasks = stmt
@@ -102,7 +104,7 @@ pub async fn get_tasks(
                 recurring_rule_id, kanban_column_id, kanban_order, completed_at,
                 created_at, updated_at
          FROM tasks 
-         ORDER BY kanban_order ASC"
+            ORDER BY kanban_column_id ASC, kanban_order ASC, id ASC"
     ).map_err(|e| e.to_string())?;
     
     let tasks = stmt
@@ -134,15 +136,15 @@ pub async fn update_task_status(
 ) -> Result<(), String> {
     let conn = db.get_connection();
     
-    let completed_at = if status == "COMPLETED" {
-        "datetime('now')"
-    } else {
-        "NULL"
-    };
-    
     conn.execute(
-        &format!("UPDATE tasks SET status = ?, completed_at = {} WHERE id = ?", completed_at),
-        [&status, &id.to_string()]
+        "UPDATE tasks
+         SET status = ?1,
+             completed_at = CASE
+               WHEN ?1 = 'COMPLETED' THEN datetime('now')
+               ELSE NULL
+             END
+         WHERE id = ?2",
+        rusqlite::params![status, id]
     ).map_err(|e| e.to_string())?;
     
     Ok(())

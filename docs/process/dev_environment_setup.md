@@ -151,6 +151,22 @@ globalThis.__RCTD_UI_TIMING_ENABLED = true;
 globalThis.__RCTD_TRACE_PROPAGATION_ENABLED = true;
 ```
 
+## Backend SQLite Query Optimization (Issue #6)
+
+The backend applies additional query-optimization indexes during DB initialization and via migration:
+
+- `migrations/003_query_optimization_indexes.sql`
+- `src/db/mod.rs` (`apply_performance_indexes`)
+
+Verification workflow (requires Rust toolchain):
+
+```sh
+cd calendar-todo-app
+cargo test query_optimization_tests -- --nocapture
+```
+
+This suite uses `EXPLAIN QUERY PLAN` to verify index usage on event-range and task-order/status hot-path queries.
+
 ## Production Build
 
 ```sh

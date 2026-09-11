@@ -147,3 +147,39 @@ Issue #5 extends the route-level split by hardening lazy boundary behavior and l
 - The app shell now renders immediately instead of waiting on task fetch completion.
 - Task loading indicators are scoped to Task route content only.
 - Navigation remains interactive while deferred modules and task data load.
+
+## Backend SQLite Query Optimization
+
+Issue #6 improves backend query performance by making hot-path SQL index-friendly and deterministic.
+
+### Query improvements
+
+- Event range query now uses overlap predicate with ordered output:
+  - `WHERE start_time <= ?2 AND end_time >= ?1 ORDER BY start_time ASC`
+- Task queries now include stable ordering for board/range/status fetches:
+  - `ORDER BY kanban_column_id ASC, kanban_order ASC, id ASC`
+  - `ORDER BY due_date ASC, kanban_order ASC, id ASC`
+  - `ORDER BY kanban_order ASC, id ASC`
+- Task status updates now use static parameterized SQL with `CASE` for `completed_at` instead of dynamic SQL string construction.
+- Search endpoints (`search_all`, `search_events`, `search_tasks`) were simplified to static prepared statements and optional-filter predicates.
+
+### Index additions
+
+- New migration: `migrations/003_query_optimization_indexes.sql`
+- Runtime bootstrap also applies these indexes for compatibility on existing local databases.
+- Added indexes:
+  - `idx_events_time_window (start_time, end_time)`
+  - `idx_events_category_start (category_id, start_time)`
+  - `idx_tasks_status_order (status, kanban_order, id)`
+  - `idx_tasks_column_order (kanban_column_id, kanban_order, id)`
+  - `idx_tasks_due_order (due_date, kanban_order, id)`
+  - `idx_tasks_category_due (category_id, due_date)`
+  - `idx_notes_created_at (created_at)`
+
+### Performance validation tests
+
+- Added `src/tests/query_optimization_tests.rs` with `EXPLAIN QUERY PLAN` assertions for:
+  - Event range queries
+  - Task status queries
+  - Task board-order queries
+- Test module is wired through `src/tests/mod.rs`.
