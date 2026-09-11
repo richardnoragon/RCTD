@@ -1,0 +1,14 @@
+{
+  "maxEntryAssetBytes": 600000,
+  "maxTotalJsBytes": 900000,
+  "maxTotalCssBytes": 200000,
+  "maxTotalAssetsBytes": 1400000,
+  "warnDeltaBytes": 15360,
+  "baseline": {
+    "entryAssetBytes": 575481,
+    "totalJsBytes": 575481,
+    "totalCssBytes": 8252,
+    "totalAssetsBytes": 583733,
+    "timestamp": "2026-09-11T01:33:31.321Z"
+  }
+}

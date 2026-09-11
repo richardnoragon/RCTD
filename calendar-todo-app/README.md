@@ -57,3 +57,44 @@ Optional runtime overrides via global flags:
 
 - `globalThis.__RCTD_UI_TIMING_ENABLED = false` disables UI timing logs.
 - `globalThis.__RCTD_TRACE_PROPAGATION_ENABLED = false` disables trace context propagation.
+
+## CI Bundle Budget Gate
+
+Issue #3 introduces a GitHub Actions quality gate that enforces JavaScript and CSS bundle budgets on every pull request and push to `master`.
+
+### Files
+
+- `.github/workflows/bundle-budget-gate.yml`
+- `ui/scripts/check-bundle-budget.mjs`
+- `ui/bundle-budget.json`
+
+### Local commands
+
+From `calendar-todo-app/ui`:
+
+```sh
+npm run bundle:report
+```
+
+Builds the UI and writes reports to:
+
+- `dist/bundle-budget-report.json`
+- `dist/bundle-budget-report.md`
+
+To initialize or refresh the baseline after intentional changes:
+
+```sh
+npm run bundle:baseline
+```
+
+To run the same enforcement logic used in CI:
+
+```sh
+npm run bundle:check
+```
+
+### Budget policy
+
+- CI fails when any hard limit in `ui/bundle-budget.json` is exceeded.
+- CI always uploads bundle report artifacts, including on failed runs.
+- Baseline drift warnings are informational and do not fail CI by themselves.

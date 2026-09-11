@@ -21,7 +21,7 @@ npm --version
 cd calendar-todo-app
 ```
 
-2. Install frontend dependencies:
+1. Install frontend dependencies:
 
 ```sh
 cd ui
@@ -69,6 +69,40 @@ Backend tests:
 cd calendar-todo-app
 cargo test
 ```
+
+## Bundle Budget Gate (Issue #3)
+
+CI workflow:
+
+- `.github/workflows/bundle-budget-gate.yml` runs on pull requests and pushes to `master`.
+- The job builds the UI, runs budget checks, and uploads report artifacts.
+
+Local usage from `calendar-todo-app/ui`:
+
+```sh
+npm run bundle:report
+```
+
+Runs build plus report generation without CI failure mode.
+
+```sh
+npm run bundle:check
+```
+
+Runs build plus strict budget enforcement (`--ci`), matching CI behavior.
+
+```sh
+npm run bundle:baseline
+```
+
+Writes current bundle metrics into `bundle-budget.json` as the new baseline.
+
+Recommended baseline update process:
+
+1. Make and review the intended bundling change.
+2. Run `npm run bundle:report` and inspect `dist/bundle-budget-report.md`.
+3. If the increase is intentional and acceptable, run `npm run bundle:baseline`.
+4. Commit the updated `bundle-budget.json` in the same change set.
 
 ## Observability Verification
 

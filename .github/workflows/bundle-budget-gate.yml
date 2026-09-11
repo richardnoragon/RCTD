@@ -1,0 +1,43 @@
+name: Bundle Budget Gate
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  bundle-budget:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install UI dependencies
+        working-directory: calendar-todo-app/ui
+        run: npm install
+
+      - name: Build UI and enforce bundle budgets
+        working-directory: calendar-todo-app/ui
+        run: npm run bundle:check
+
+      - name: Upload bundle budget reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-budget-report
+          path: |
+            calendar-todo-app/ui/dist/bundle-budget-report.json
+            calendar-todo-app/ui/dist/bundle-budget-report.md
+          if-no-files-found: warn
