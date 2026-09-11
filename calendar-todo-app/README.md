@@ -98,3 +98,36 @@ npm run bundle:check
 - CI fails when any hard limit in `ui/bundle-budget.json` is exceeded.
 - CI always uploads bundle report artifacts, including on failed runs.
 - Baseline drift warnings are informational and do not fail CI by themselves.
+
+## Route-Level Code Splitting
+
+Issue #4 introduces route-level lazy loading and manual vendor chunking.
+
+### What changed
+
+- App-level views are lazy-loaded with `Suspense` fallbacks.
+- Calendar stylesheet loading was moved into the Calendar component chunk.
+- Vite manual chunk rules split key vendor groups:
+  - `vendor-fullcalendar`
+  - `vendor-react`
+  - `vendor-dnd`
+  - `vendor-tauri`
+
+### Why this helps
+
+- The main entry JavaScript chunk is significantly smaller than before.
+- Feature code and styles are loaded on demand when users navigate views.
+- Chunking is now deterministic enough for CI budget enforcement and trend tracking.
+
+### Verification
+
+From `calendar-todo-app/ui`:
+
+```sh
+npm run bundle:report
+```
+
+Then review:
+
+- Vite build output for split chunks.
+- `dist/bundle-budget-report.md` for budget status.

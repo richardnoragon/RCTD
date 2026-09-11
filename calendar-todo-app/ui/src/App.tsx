@@ -1,20 +1,27 @@
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
 import './App.css';
-import { Calendar } from './components/calendar/Calendar';
-import './components/calendar/Calendar.css';
 import { CalendarProvider } from './components/calendar/CalendarContext';
-import CalendarControls from './components/calendar/CalendarControls';
-import { Search } from './components/search/Search';
-import KanbanBoard from './components/tasks/KanbanBoard';
-import TaskCalendarView from './components/tasks/TaskCalendarView';
-import TaskListView from './components/tasks/TaskListView';
-import './components/tasks/Tasks.css';
 import { Task, taskService } from './services/taskService';
+
+const Calendar = lazy(() => import('./components/calendar/Calendar'));
+const CalendarControls = lazy(() => import('./components/calendar/CalendarControls'));
+const Search = lazy(() =>
+  import('./components/search/Search').then((module) => ({ default: module.Search }))
+);
+const KanbanBoard = lazy(() => import('./components/tasks/KanbanBoard'));
+const TaskCalendarView = lazy(() => import('./components/tasks/TaskCalendarView'));
+const TaskListView = lazy(() => import('./components/tasks/TaskListView'));
 
 type View = 'calendar' | 'tasks' | 'search';
 type TaskView = 'kanban' | 'calendar' | 'list';
 
 function App(): JSX.Element {
+    const renderLoadingState = (message: string): JSX.Element => (
+      <div className="loading-container">
+        <p>{message}</p>
+      </div>
+    );
+
   const [currentView, setCurrentView] = useState<View>('calendar');
   const [currentTaskView, setCurrentTaskView] = useState<TaskView>('kanban');
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -90,26 +97,34 @@ function App(): JSX.Element {
   const renderCurrentView = (): JSX.Element => {
     if (currentView === 'calendar') {
       return (
-        <>
-          <CalendarControls />
-          <Calendar />
-        </>
+        <Suspense fallback={renderLoadingState('Loading calendar view...')}>
+          <>
+            <CalendarControls />
+            <Calendar />
+          </>
+        </Suspense>
       );
     }
 
     if (currentView === 'search') {
-      return <Search />;
+      return (
+        <Suspense fallback={renderLoadingState('Loading search view...')}>
+          <Search />
+        </Suspense>
+      );
     }
 
-    return renderTasksView();
+    return (
+      <Suspense fallback={renderLoadingState('Loading tasks view...')}>
+        {renderTasksView()}
+      </Suspense>
+    );
   };
 
   return (
     <CalendarProvider>
       {isLoading ? (
-        <div className="loading-container">
-          <p>Loading application...</p>
-        </div>
+        renderLoadingState('Loading application...')
       ) : (
         <div className="app">
           <div className="app-header">

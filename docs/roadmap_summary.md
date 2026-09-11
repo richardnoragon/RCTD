@@ -38,6 +38,7 @@
 - Group A is ordered to establish guardrails and immediate wins before deeper optimization work.
 - Group B depends on Group A instrumentation and baseline measurements.
 - Issue #3 implementation is now in place via `.github/workflows/bundle-budget-gate.yml` and the UI bundle checker script/config.
+- Issue #4 implementation is now in place via route-level lazy loading in `ui/src/App.tsx` and manual chunking in `ui/vite.config.ts`.
 - Milestone links:
 - Sprint 1 milestone: [Milestone 1](https://github.com/richardnoragon/RCTD/milestone/1)
 - Sprint 2 milestone: [Milestone 2](https://github.com/richardnoragon/RCTD/milestone/2)

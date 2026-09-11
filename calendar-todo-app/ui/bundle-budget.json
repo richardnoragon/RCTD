@@ -5,10 +5,11 @@
   "maxTotalAssetsBytes": 1400000,
   "warnDeltaBytes": 15360,
   "baseline": {
-    "entryAssetBytes": 575481,
-    "totalJsBytes": 575481,
-    "totalCssBytes": 8252,
-    "totalAssetsBytes": 583733,
-    "timestamp": "2026-09-11T01:33:31.321Z"
+    "entryAssetBytes": 7214,
+    "totalJsBytes": 579752,
+    "totalCssBytes": 8255,
+    "totalAssetsBytes": 588007,
+    "totalSourceMapBytes": 2129006,
+    "timestamp": "2026-09-11T01:43:17.705Z"
   }
 }

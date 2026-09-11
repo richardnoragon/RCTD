@@ -54,12 +54,15 @@ function detectEntryAssetBytes(indexHtmlPath, assetsByName) {
 }
 
 function buildMetrics(assets) {
-  const jsAssets = assets.filter((asset) => asset.name.endsWith('.js'));
-  const cssAssets = assets.filter((asset) => asset.name.endsWith('.css'));
+  const sourceMapAssets = assets.filter((asset) => asset.name.endsWith('.map'));
+  const budgetedAssets = assets.filter((asset) => !asset.name.endsWith('.map'));
+  const jsAssets = budgetedAssets.filter((asset) => asset.name.endsWith('.js'));
+  const cssAssets = budgetedAssets.filter((asset) => asset.name.endsWith('.css'));
 
   const totalJsBytes = jsAssets.reduce((total, asset) => total + asset.size, 0);
   const totalCssBytes = cssAssets.reduce((total, asset) => total + asset.size, 0);
-  const totalAssetsBytes = assets.reduce((total, asset) => total + asset.size, 0);
+  const totalAssetsBytes = budgetedAssets.reduce((total, asset) => total + asset.size, 0);
+  const totalSourceMapBytes = sourceMapAssets.reduce((total, asset) => total + asset.size, 0);
 
   const assetsByName = new Map(assets.map((asset) => [asset.name, asset]));
   const entryAssetBytes = detectEntryAssetBytes(path.join(distPath, 'index.html'), assetsByName);
@@ -69,6 +72,7 @@ function buildMetrics(assets) {
     totalJsBytes,
     totalCssBytes,
     totalAssetsBytes,
+    totalSourceMapBytes,
   };
 }
 
@@ -154,6 +158,7 @@ function writeReports(report) {
     `- totalJsBytes: ${formatBytes(report.metrics.totalJsBytes)}`,
     `- totalCssBytes: ${formatBytes(report.metrics.totalCssBytes)}`,
     `- totalAssetsBytes: ${formatBytes(report.metrics.totalAssetsBytes)}`,
+    `- totalSourceMapBytes: ${formatBytes(report.metrics.totalSourceMapBytes)}`,
     '',
     '## Delta vs Baseline',
     '',

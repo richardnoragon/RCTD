@@ -104,6 +104,22 @@ Recommended baseline update process:
 3. If the increase is intentional and acceptable, run `npm run bundle:baseline`.
 4. Commit the updated `bundle-budget.json` in the same change set.
 
+## Route-Level Code Splitting (Issue #4)
+
+The UI build now applies route-level lazy loading plus manual vendor chunking.
+
+Quick verification from `calendar-todo-app/ui`:
+
+```sh
+npm run bundle:report
+```
+
+Expected outcomes:
+
+1. Build output includes route/view chunks (`Calendar`, `Search`, `TaskListView`, `KanbanBoard`, `TaskCalendarView`).
+2. Build output includes vendor chunks (`vendor-fullcalendar`, `vendor-react`, `vendor-dnd`, `vendor-tauri`).
+3. Bundle budget report passes under the configured hard limits.
+
 ## Observability Verification
 
 1. Open a task list view or Kanban column in the app.
