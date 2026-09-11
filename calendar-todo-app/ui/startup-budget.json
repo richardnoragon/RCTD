@@ -1,0 +1,8 @@
+{
+  "startupBudgetMs": 2000,
+  "shellBudgetMs": 750,
+  "sample": {
+    "startupBudgetMs": 1200,
+    "shellBudgetMs": 420
+  }
+}

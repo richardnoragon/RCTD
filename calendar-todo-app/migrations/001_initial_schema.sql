@@ -121,12 +121,22 @@ CREATE TABLE reminders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     item_type TEXT NOT NULL CHECK (item_type IN ('EVENT', 'TASK')),
     item_id INTEGER NOT NULL,
-    trigger_time TEXT NOT NULL, -- ISO 8601 format
+    trigger_time TEXT NOT NULL, -- ISO 8601 UTC instant
     offset_description TEXT NOT NULL, -- e.g., '15 minutes before'
     is_dismissed BOOLEAN NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE (item_type, item_id)
 );
+
+CREATE TABLE reminder_delivery_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    reminder_id INTEGER NOT NULL REFERENCES reminders(id) ON DELETE CASCADE,
+    delivery_key TEXT NOT NULL UNIQUE,
+    claimed_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX idx_reminder_delivery_log_reminder_id ON reminder_delivery_log(reminder_id);
+CREATE INDEX idx_reminder_delivery_log_claimed_at ON reminder_delivery_log(claimed_at);
 
 CREATE TABLE time_tracking (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

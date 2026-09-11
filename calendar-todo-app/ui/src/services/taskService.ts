@@ -1,5 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
 
+import { timedInvoke } from './observability';
+
 export interface Task {
   id?: number;
   title: string;
@@ -16,11 +18,21 @@ export interface Task {
 
 export const taskService = {
   async getTasks(): Promise<Task[]> {
-    return invoke('get_tasks');
+    return timedInvoke('get_tasks', undefined, {
+      includeTraceContext: true,
+      uiAction: 'task-list-load',
+    });
   },
 
   async getTasksInColumn(columnId: number): Promise<Task[]> {
-    return invoke('get_tasks_in_column', { columnId });
+    return timedInvoke(
+      'get_tasks_in_column',
+      { columnId },
+      {
+        includeTraceContext: true,
+        uiAction: 'kanban-column-load',
+      }
+    );
   },
 
   async createTask(task: Task): Promise<number> {

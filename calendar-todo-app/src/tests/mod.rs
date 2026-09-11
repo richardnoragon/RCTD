@@ -13,6 +13,7 @@ pub mod reminder_tests;
 pub mod holiday_feed_tests;
 pub mod models_tests;
 pub mod operations_tests;
+pub mod query_optimization_tests;
 pub mod test_utilities;
 
 // Helper function to create a test database

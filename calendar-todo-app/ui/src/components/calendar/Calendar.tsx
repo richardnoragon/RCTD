@@ -7,13 +7,12 @@ import listPlugin from '@fullcalendar/list';
 import FullCalendar from '@fullcalendar/react';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import * as React from 'react';
+import './Calendar.css';
 import { eventService } from '../../services/eventService';
 import type { Event } from '../../types/Event';
 import { EventForm } from './EventForm';
 import { ExceptionForm } from './ExceptionForm';
 const { useState, useEffect } = React;
-
-type CalendarViewType = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek';
 
 // Extended type for events with recurring properties
 interface ExtendedEvent extends Event {
@@ -35,17 +34,30 @@ interface CalendarProps {
   onDateSelect?: (start: Date, end: Date, allDay: boolean) => void;
 }
 
+const mapCustomEvents = (customEvents: CalendarProps['events']): ExtendedEvent[] => {
+  if (!customEvents) {
+    return [];
+  }
+
+  return customEvents.map((event) => ({
+    id: Number.parseInt(event.id, 10),
+    title: event.title,
+    start_time: event.start,
+    end_time: event.end,
+    is_all_day: event.allDay ?? false,
+    priority: 3,
+    location: event.location,
+  }));
+};
+
 // Using simple function declaration with proper return type
 export const Calendar = (props: CalendarProps): JSX.Element => {
-  const [events, setEvents] = useState<ExtendedEvent[]>([]);
+  const [events, setEvents] = useState<ExtendedEvent[]>(() => mapCustomEvents(props.events));
   const [selectedEvent, setSelectedEvent] = useState<ExtendedEvent | null>(null);
   const [showEventForm, setShowEventForm] = useState(false);
   const [isNewEvent, setIsNewEvent] = useState(false);
   const [selectedDates, setSelectedDates] = useState<{ start: Date, end: Date, allDay: boolean } | null>(null);
 
-  useEffect(() => {
-    loadEvents();
-  }, []);
   const loadEvents = async () => {
     try {
       // Load events for the next 3 months by default
@@ -72,11 +84,25 @@ export const Calendar = (props: CalendarProps): JSX.Element => {
       console.error('Failed to load events:', error);
     }
   };
+
+  useEffect(() => {
+    if (props.events) {
+      setEvents(mapCustomEvents(props.events));
+      return;
+    }
+
+    loadEvents();
+  }, [props.events]);
+
   const [showExceptionForm, setShowExceptionForm] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
 
   const handleEventClick = (clickInfo: EventClickArg) => {
-    const event = events.find(e => e.id === parseInt(clickInfo.event.id));
+    if (props.onEventClick) {
+      props.onEventClick(clickInfo);
+    }
+
+    const event = events.find(e => e.id === Number.parseInt(clickInfo.event.id, 10));
     if (event) {
       if (event.recurring_rule_id) {
         // For recurring events, show the exception form
@@ -93,6 +119,10 @@ export const Calendar = (props: CalendarProps): JSX.Element => {
   };
 
   const handleDateSelect = (selectInfo: DateSelectArg) => {
+    if (props.onDateSelect) {
+      props.onDateSelect(selectInfo.start, selectInfo.end, selectInfo.allDay);
+    }
+
     setSelectedDates({
       start: selectInfo.start,
       end: selectInfo.end,
@@ -115,17 +145,6 @@ export const Calendar = (props: CalendarProps): JSX.Element => {
       setSelectedDates(null);
     } catch (error) {
       console.error('Failed to save event:', error);
-    }
-  };
-
-  const handleEventDelete = async (id: number) => {
-    try {
-      await eventService.deleteEvent(id);
-      await loadEvents();
-      setShowEventForm(false);
-      setSelectedEvent(null);
-    } catch (error) {
-      console.error('Failed to delete event:', error);
     }
   };
 

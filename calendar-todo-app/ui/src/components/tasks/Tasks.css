@@ -248,9 +248,19 @@
 .task-list {
   flex: 1;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  position: relative;
+  display: block;
+  min-height: 420px;
+}
+
+.task-virtualizer {
+  position: relative;
+  width: 100%;
+}
+
+.task-row {
+  padding: 0 0 0.5rem;
+  box-sizing: border-box;
 }
 
 .no-tasks {

@@ -1,5 +1,4 @@
 use crate::db::{Database, models::Event, error::DbResult};
-use chrono::{DateTime, Utc};
 use serde::{Serialize, Deserialize};
 use tauri::State;
 
@@ -28,7 +27,8 @@ pub async fn get_events_in_range(
         "SELECT id, title, description, start_time, end_time, is_all_day, location, 
          priority, category_id, recurring_rule_id, created_at, updated_at 
          FROM events 
-         WHERE (start_time BETWEEN ?1 AND ?2) OR (end_time BETWEEN ?1 AND ?2)"
+            WHERE start_time <= ?2 AND end_time >= ?1
+            ORDER BY start_time ASC"
     ).map_err(|e| e.to_string())?;
     
     let events = stmt

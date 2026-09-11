@@ -24,7 +24,7 @@ This integration test suite validates **end-to-end functionality** across all sy
 ### Current Test Health Dashboard
 
 | **Metric** | **Current** | **Target** | **Status** |
-|------------|-------------|------------|------------|
+| --- | --- | --- | --- |
 | **Overall Coverage** | 87.3% | 95% | 🟡 Improving |
 | **Success Rate** | 96.8% | 98% | � **Excellent** |
 | **Test Suites** | 12 Active | 18 Planned | 🟠 Expanding |
@@ -216,6 +216,31 @@ Based on [`001_initial_schema.sql`](calendar-todo-app/migrations/001_initial_sch
 - **Holiday & Event Feeds** - Based on [`holiday_feed_service.rs`](calendar-todo-app/src/services/holiday_feed_service.rs)
   - [`holiday_feed_sync.test.ts`](calendar-todo-app/tests/integration/external/holiday_feed_sync.test.ts) - Holiday APIs
   - [`ical_import_export.test.ts`](calendar-todo-app/tests/integration/external/ical_import_export.test.ts) - iCal format
+
+  ### 📈 Performance Regression Suite
+
+  **Directory:** [`tests/integration/reports/`](calendar-todo-app/tests/integration/reports/) and generated artifacts under [`results/integration/performance/`](calendar-todo-app/results/integration/performance/)  
+  **Status:** 🟢 Active - Issue #10 implementation in place
+
+  #### Current Suite Coverage
+
+  - `npm run perf:regression` - Orchestrates UI and backend hot-path checks with artifact generation
+  - `tests/integration/reports/performance_regression_suite.md` - Canonical suite definition and pass criteria
+  - `results/integration/performance/results_summary.json` - Machine-readable scenario rollup
+  - `results/integration/performance/results_summary.md` - Human-readable execution summary
+
+  #### Scenario Groups
+
+  - UI search debounce and result handling
+  - UI dense list and virtualization guardrails
+  - Backend query optimization and search regression checks
+  - Backend bulk-operation performance smoke tests
+
+  #### Pass Criteria
+
+  - Every scenario exits successfully.
+  - Every scenario stays within its configured runtime budget.
+  - Budget breaches are reported as regressions in the generated summary.
 
 ---
 
@@ -483,7 +508,7 @@ npm run test:integration:coverage
 ### Test Results Summary
 
 | Test Suite | Status | Runs | Pass Rate | Duration | Last Execution |
-|------------|--------|------|-----------|----------|----------------|
+| --- | --- | --- | --- | --- | --- |
 | **UI Date/Time Matrix** | ✅ **OPERATIONAL** | 9 | **100%** | **80,968ms** | **2025-09-07T14:17:06Z** |
 | **Root Date/Time Matrix** | ✅ **OPERATIONAL** | 9 | **100%** | **137,360ms** | **2025-09-07T15:01:21Z** |
 | **Search Accessibility** | ✅ **OPERATIONAL** | 1 | **100%** | **464ms** | **2025-01-07T16:06:18Z** |

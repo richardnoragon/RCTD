@@ -1,8 +1,12 @@
-import React, { ChangeEvent, useEffect, useState } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Task, taskService } from '../../services/taskService';
 import { TaskCard } from './TaskCard';
 import { TaskForm } from './TaskForm';
 import './Tasks.css';
+
+const VIRTUALIZED_TASK_ROW_HEIGHT = 120;
+const VIRTUALIZED_TASK_OVERSCAN = 4;
+const VIRTUALIZATION_THRESHOLD = 40;
 
 interface TaskListViewProps {
   onTaskUpdate: (task: Task) => Promise<void>;
@@ -82,6 +86,31 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
     return a.priority - b.priority;
   });
 
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const shouldUseVirtualization = sortedTasks.length > VIRTUALIZATION_THRESHOLD;
+
+  const virtualizedWindow = useMemo(() => {
+    const maxIndex = sortedTasks.length;
+    const startIndex = Math.max(
+      0,
+      Math.floor(scrollTop / VIRTUALIZED_TASK_ROW_HEIGHT) - VIRTUALIZED_TASK_OVERSCAN
+    );
+    const endIndex = Math.min(
+      maxIndex,
+      Math.ceil((scrollTop + (listRef.current?.clientHeight ?? 420)) / VIRTUALIZED_TASK_ROW_HEIGHT) +
+        VIRTUALIZED_TASK_OVERSCAN
+    );
+
+    return {
+      startIndex,
+      endIndex,
+      visibleTasks: sortedTasks.slice(startIndex, endIndex),
+      totalHeight: sortedTasks.length * VIRTUALIZED_TASK_ROW_HEIGHT,
+      offsetY: startIndex * VIRTUALIZED_TASK_ROW_HEIGHT,
+    };
+  }, [sortedTasks, scrollTop]);
+
   return (
     <div className="task-list-view">
       <div className="task-list-header">
@@ -121,12 +150,42 @@ export const TaskListView: React.FC<TaskListViewProps> = ({
         </button>
       </div>
 
-      <div className="task-list">
+      <div
+        ref={listRef}
+        className="task-list"
+        role="list"
+        aria-label="Task list"
+        onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
+      >
         {sortedTasks.length === 0 ? (
           <div className="no-tasks">
             {filter.searchTerm || filter.status || filter.priority
               ? 'No tasks match your filters'
               : 'No tasks yet. Create one!'}
+          </div>
+        ) : shouldUseVirtualization ? (
+          <div className="task-virtualizer" style={{ height: virtualizedWindow.totalHeight }}>
+            {virtualizedWindow.visibleTasks.map((task, index) => (
+              <div
+                key={task.id}
+                className="task-row"
+                role="listitem"
+                aria-label={`Task ${task.title}`}
+                style={{
+                  position: 'absolute',
+                  top: (virtualizedWindow.startIndex + index) * VIRTUALIZED_TASK_ROW_HEIGHT,
+                  left: 0,
+                  right: 0,
+                  height: VIRTUALIZED_TASK_ROW_HEIGHT,
+                }}
+              >
+                <TaskCard
+                  task={task}
+                  onUpdate={onTaskUpdate}
+                  onDelete={onTaskDelete}
+                />
+              </div>
+            ))}
           </div>
         ) : (
           sortedTasks.map((task) => (

@@ -17,8 +17,39 @@
 
 ## Strategic Development Priorities
 
-1. **Bundle Optimisation** – Address the ~574 kB Vite warning with route-based code splitting or manual chunk definitions.
-2. **Suite Expansion** – Add additional integration suites (e.g., notifications, recurring events) under `ui/tests/integration/suites` and wire them into CI.
-3. **Runtime Observability** – Introduce structured logging/telemetry within Tauri commands to surface errors captured by the UI mocks.
-4. **Documentation Depth** – Extend `docs/product` and `docs/process` with user-facing release notes, CI execution guides, and links to generated build artifacts.
-5. **State Management Hardening** – Layer optimistic UI and error states around Kanban and Task Calendar interactions to match production expectations.
+### Roadmap Group A (Sprint Performance 1, Weeks 1-2)
+
+1. Build bundle-size governance in CI: [Issue #3](https://github.com/richardnoragon/RCTD/issues/3)
+2. Implement route-level code splitting and manual chunks: [Issue #4](https://github.com/richardnoragon/RCTD/issues/4)
+3. Add lazy-loading boundaries for major feature modules: [Issue #5](https://github.com/richardnoragon/RCTD/issues/5)
+4. Profile and optimize backend SQLite hot queries: [Issue #6](https://github.com/richardnoragon/RCTD/issues/6)
+5. Add structured timing observability for Tauri + UI fetches: [Issue #2](https://github.com/richardnoragon/RCTD/issues/2)
+
+### Roadmap Group B (Sprint Performance 2, Weeks 3-4)
+
+1. Measure and optimize cold-start path for Tauri + UI bootstrap: [Issue #7](https://github.com/richardnoragon/RCTD/issues/7)
+2. Virtualize dense list/calendar views for large datasets: [Issue #8](https://github.com/richardnoragon/RCTD/issues/8)
+3. Add SQLite FTS-backed search indexing path: [Issue #9](https://github.com/richardnoragon/RCTD/issues/9)
+4. Add performance regression integration suite and reporting artifacts: [Issue #10](https://github.com/richardnoragon/RCTD/issues/10)
+
+### Implementation Notes
+
+- All created issues include suggested labels and milestone tags inside issue bodies for consistent triage.
+- Group A is ordered to establish guardrails and immediate wins before deeper optimization work.
+- Group B depends on Group A instrumentation and baseline measurements.
+- Issue #3 implementation is now in place via `.github/workflows/bundle-budget-gate.yml` and the UI bundle checker script/config.
+- Issue #4 implementation is now in place via route-level lazy loading in `ui/src/App.tsx` and manual chunking in `ui/vite.config.ts`.
+- Issue #5 implementation is now in place via lazy boundary hardening and non-blocking shell rendering in `ui/src/App.tsx`.
+- Issue #6 implementation is now in place via backend query rewrites in `src/services/event_service.rs`, `src/services/task_service.rs`, `src/services/search_service.rs`, index rollout in `migrations/003_query_optimization_indexes.sql` and `src/db/mod.rs`, and query-plan tests in `src/tests/query_optimization_tests.rs`.
+- Issue #1 implementation is now in place via UTC-based reminder claim helpers, persisted delivery logging, and restart/idempotency regression tests in `src/services/reminder_service.rs`, `migrations/001_initial_schema.sql`, and `src/tests/reminder_tests.rs`.
+- Issue #7 implementation is now in place via idle-phase task bootstrap deferral, startup timing instrumentation, and a startup budget check in `ui/src/App.tsx`, `ui/src/services/startupMetrics.ts`, `ui/scripts/check-startup-budget.mjs`, and `ui/startup-budget.json`.
+- Issue #8 implementation is now in place via windowed task-list virtualization in `ui/src/components/tasks/TaskListView.tsx` and dense-list regression coverage in `ui/src/components/tasks/TaskListView.test.tsx`.
+- Issue #9 implementation is now in place via an FTS5-backed `search_index` table with trigger-based synchronization in `src/db/mod.rs`, FTS-first search helpers with a `LIKE` fallback in `src/services/search_service.rs`, and a regression test in `src/tests/search_tests.rs`.
+- Issue #10 implementation is now in place via the performance regression runner in `scripts/integration/performance/run_regression_suite.js`, the suite report in `tests/integration/reports/performance_regression_suite.md`, and the root `npm run perf:regression` entry point.
+- Milestone links:
+- Sprint 1 milestone: [Milestone 1](https://github.com/richardnoragon/RCTD/milestone/1)
+- Sprint 2 milestone: [Milestone 2](https://github.com/richardnoragon/RCTD/milestone/2)
+
+### Next Theme Queue
+
+- After the performance track above, the next roadmap theme selected is Task/Kanban UX improvements.

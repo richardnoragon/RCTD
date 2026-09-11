@@ -6,6 +6,11 @@
   "scripts": {
     "dev": "vite --port 1420",
     "build": "tsc && vite build",
+    "bundle:build": "npm run build",
+    "bundle:check": "npm run build && node scripts/check-bundle-budget.mjs --ci",
+    "bundle:report": "npm run build && node scripts/check-bundle-budget.mjs",
+    "bundle:baseline": "npm run build && node scripts/check-bundle-budget.mjs --write-baseline",
+    "startup:check": "node scripts/check-startup-budget.mjs",
     "preview": "vite preview",
     "test": "jest",
     "test:watch": "jest --watch",

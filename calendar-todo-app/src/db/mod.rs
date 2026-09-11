@@ -15,14 +15,21 @@ pub struct Database {
 }
 
 impl Database {
-    pub fn new() -> Result<Self> {
-        let db_path = Self::get_database_path()?;
-        fs::create_dir_all(db_path.parent().unwrap())?;
-        
-        let conn = Connection::open(&db_path)?;
+    pub fn new<P: AsRef<std::path::Path>>(db_path: P) -> Result<Self> {
+        let db_path = db_path.as_ref();
+        if let Some(parent) = db_path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+
+        let conn = Connection::open(db_path)?;
         let db = Database { conn };
         db.initialize()?;
         Ok(db)
+    }
+
+    pub fn new_default() -> Result<Self> {
+        let db_path = Self::get_database_path()?;
+        Self::new(db_path)
     }
 
     pub fn new_in_memory() -> Result<Self> {
@@ -49,6 +56,8 @@ impl Database {
         let migration_sql = fs::read_to_string(migration_path)?;
         
         self.conn.execute_batch(&migration_sql)?;
+        self.apply_performance_indexes()?;
+        self.apply_search_indexes()?;
         
         Ok(())
     }
@@ -59,7 +68,104 @@ impl Database {
 
         // Execute in-memory schema for testing
         self.conn.execute_batch(&Self::get_test_schema())?;
+        self.apply_performance_indexes()?;
+        self.apply_search_indexes()?;
         
+        Ok(())
+    }
+
+    fn apply_performance_indexes(&self) -> Result<()> {
+        self.conn.execute_batch(
+            r#"
+            CREATE INDEX IF NOT EXISTS idx_events_time_window ON events(start_time, end_time);
+            CREATE INDEX IF NOT EXISTS idx_events_category_start ON events(category_id, start_time);
+
+            CREATE INDEX IF NOT EXISTS idx_tasks_status_order ON tasks(status, kanban_order, id);
+            CREATE INDEX IF NOT EXISTS idx_tasks_column_order ON tasks(kanban_column_id, kanban_order, id);
+            CREATE INDEX IF NOT EXISTS idx_tasks_due_order ON tasks(due_date, kanban_order, id);
+            CREATE INDEX IF NOT EXISTS idx_tasks_category_due ON tasks(category_id, due_date);
+
+            CREATE INDEX IF NOT EXISTS idx_notes_created_at ON notes(created_at);
+            "#,
+        )?;
+
+        Ok(())
+    }
+
+    fn apply_search_indexes(&self) -> Result<()> {
+        let fts_sql = r#"
+            CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(
+                entity_type UNINDEXED,
+                entity_id UNINDEXED,
+                title,
+                content,
+                tokenize = 'porter unicode61'
+            );
+
+            DELETE FROM search_index;
+
+            INSERT INTO search_index(entity_type, entity_id, title, content)
+            SELECT 'EVENT', id, title, COALESCE(description, '') || ' ' || COALESCE(location, '')
+            FROM events;
+
+            INSERT INTO search_index(entity_type, entity_id, title, content)
+            SELECT 'TASK', id, title, COALESCE(description, '')
+            FROM tasks;
+
+            INSERT INTO search_index(entity_type, entity_id, title, content)
+            SELECT 'NOTE', id, COALESCE(title, ''), COALESCE(content, '')
+            FROM notes;
+
+            CREATE TRIGGER IF NOT EXISTS events_search_ai AFTER INSERT ON events BEGIN
+                INSERT INTO search_index(entity_type, entity_id, title, content)
+                VALUES ('EVENT', NEW.id, NEW.title, COALESCE(NEW.description, '') || ' ' || COALESCE(NEW.location, ''));
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS events_search_ad AFTER DELETE ON events BEGIN
+                DELETE FROM search_index WHERE entity_type = 'EVENT' AND entity_id = OLD.id;
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS events_search_au AFTER UPDATE ON events BEGIN
+                DELETE FROM search_index WHERE entity_type = 'EVENT' AND entity_id = OLD.id;
+                INSERT INTO search_index(entity_type, entity_id, title, content)
+                VALUES ('EVENT', NEW.id, NEW.title, COALESCE(NEW.description, '') || ' ' || COALESCE(NEW.location, ''));
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS tasks_search_ai AFTER INSERT ON tasks BEGIN
+                INSERT INTO search_index(entity_type, entity_id, title, content)
+                VALUES ('TASK', NEW.id, NEW.title, COALESCE(NEW.description, ''));
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS tasks_search_ad AFTER DELETE ON tasks BEGIN
+                DELETE FROM search_index WHERE entity_type = 'TASK' AND entity_id = OLD.id;
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS tasks_search_au AFTER UPDATE ON tasks BEGIN
+                DELETE FROM search_index WHERE entity_type = 'TASK' AND entity_id = OLD.id;
+                INSERT INTO search_index(entity_type, entity_id, title, content)
+                VALUES ('TASK', NEW.id, NEW.title, COALESCE(NEW.description, ''));
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS notes_search_ai AFTER INSERT ON notes BEGIN
+                INSERT INTO search_index(entity_type, entity_id, title, content)
+                VALUES ('NOTE', NEW.id, COALESCE(NEW.title, ''), COALESCE(NEW.content, ''));
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS notes_search_ad AFTER DELETE ON notes BEGIN
+                DELETE FROM search_index WHERE entity_type = 'NOTE' AND entity_id = OLD.id;
+            END;
+
+            CREATE TRIGGER IF NOT EXISTS notes_search_au AFTER UPDATE ON notes BEGIN
+                DELETE FROM search_index WHERE entity_type = 'NOTE' AND entity_id = OLD.id;
+                INSERT INTO search_index(entity_type, entity_id, title, content)
+                VALUES ('NOTE', NEW.id, COALESCE(NEW.title, ''), COALESCE(NEW.content, ''));
+            END;
+        "#;
+
+        if self.conn.execute_batch(fts_sql).is_err() {
+            // SQLite builds without FTS5 support should gracefully fall back to the original LIKE-based path.
+        }
+
         Ok(())
     }
 
@@ -121,6 +227,16 @@ impl Database {
             due_date DATETIME,
             priority INTEGER NOT NULL DEFAULT 3,
             status TEXT NOT NULL DEFAULT 'TODO' CHECK (status IN ('TODO', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED')),
+
+        CREATE TABLE IF NOT EXISTS reminder_delivery_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            reminder_id INTEGER NOT NULL REFERENCES reminders(id) ON DELETE CASCADE,
+            delivery_key TEXT NOT NULL UNIQUE,
+            claimed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_reminder_delivery_log_reminder_id ON reminder_delivery_log(reminder_id);
+        CREATE INDEX IF NOT EXISTS idx_reminder_delivery_log_claimed_at ON reminder_delivery_log(claimed_at);
             category_id INTEGER,
             recurring_rule_id INTEGER,
             kanban_column_id INTEGER,
@@ -131,6 +247,14 @@ impl Database {
             FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
             FOREIGN KEY (recurring_rule_id) REFERENCES recurring_rules(id) ON DELETE SET NULL,
             FOREIGN KEY (kanban_column_id) REFERENCES kanban_columns(id) ON DELETE SET NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS notes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            content TEXT NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
 
         INSERT OR IGNORE INTO kanban_columns (name, position) VALUES
