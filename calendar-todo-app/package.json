@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "cd ui && npm run dev",
     "build": "cd ui && npm run build",
-    "test": "cd ui && npm test"
+    "test": "cd ui && npm test",
+    "perf:regression": "node scripts/integration/performance/run_regression_suite.js"
   },
   "devDependencies": {
     "@tauri-apps/api": "^2.8.0",

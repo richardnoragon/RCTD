@@ -41,7 +41,11 @@
 - Issue #4 implementation is now in place via route-level lazy loading in `ui/src/App.tsx` and manual chunking in `ui/vite.config.ts`.
 - Issue #5 implementation is now in place via lazy boundary hardening and non-blocking shell rendering in `ui/src/App.tsx`.
 - Issue #6 implementation is now in place via backend query rewrites in `src/services/event_service.rs`, `src/services/task_service.rs`, `src/services/search_service.rs`, index rollout in `migrations/003_query_optimization_indexes.sql` and `src/db/mod.rs`, and query-plan tests in `src/tests/query_optimization_tests.rs`.
+- Issue #1 implementation is now in place via UTC-based reminder claim helpers, persisted delivery logging, and restart/idempotency regression tests in `src/services/reminder_service.rs`, `migrations/001_initial_schema.sql`, and `src/tests/reminder_tests.rs`.
 - Issue #7 implementation is now in place via idle-phase task bootstrap deferral, startup timing instrumentation, and a startup budget check in `ui/src/App.tsx`, `ui/src/services/startupMetrics.ts`, `ui/scripts/check-startup-budget.mjs`, and `ui/startup-budget.json`.
+- Issue #8 implementation is now in place via windowed task-list virtualization in `ui/src/components/tasks/TaskListView.tsx` and dense-list regression coverage in `ui/src/components/tasks/TaskListView.test.tsx`.
+- Issue #9 implementation is now in place via an FTS5-backed `search_index` table with trigger-based synchronization in `src/db/mod.rs`, FTS-first search helpers with a `LIKE` fallback in `src/services/search_service.rs`, and a regression test in `src/tests/search_tests.rs`.
+- Issue #10 implementation is now in place via the performance regression runner in `scripts/integration/performance/run_regression_suite.js`, the suite report in `tests/integration/reports/performance_regression_suite.md`, and the root `npm run perf:regression` entry point.
 - Milestone links:
 - Sprint 1 milestone: [Milestone 1](https://github.com/richardnoragon/RCTD/milestone/1)
 - Sprint 2 milestone: [Milestone 2](https://github.com/richardnoragon/RCTD/milestone/2)

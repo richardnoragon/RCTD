@@ -1,7 +1,9 @@
+use crate::db::Database;
 use crate::services::reminder_service::*;
 use crate::tests::test_utilities::*;
 use super::{setup_test_db, setup_test_db_with_data};
 use serial_test::serial;
+use tempfile::tempdir;
 
 /// Data factory for creating test reminders
 pub struct ReminderFactory;
@@ -527,4 +529,91 @@ async fn test_reminder_performance_benchmarks() {
     let retrieval_time = start_time.elapsed();
     assert!(retrieval_time.as_millis() < 1000, "Retrieving 100 reminders should complete within 1 second");
     assert_eq!(pending.len(), 100, "Should retrieve all 100 reminders");
+}
+
+#[tokio::test]
+#[serial]
+async fn test_claim_due_reminders_is_idempotent() {
+    let db = setup_test_db();
+    let reminder = ReminderFactory::create_event_reminder();
+
+    create_reminder(reminder, tauri::State::new(db.clone()))
+        .await
+        .expect("Failed to create reminder");
+
+    let first_claim = claim_due_reminders(
+        Some("2024-01-15 09:30:00".to_string()),
+        tauri::State::new(db.clone()),
+    )
+    .await
+    .expect("Failed to claim due reminders");
+
+    let second_claim = claim_due_reminders(
+        Some("2024-01-15 09:30:00".to_string()),
+        tauri::State::new(db),
+    )
+    .await
+    .expect("Failed to re-claim due reminders");
+
+    assert_eq!(first_claim.len(), 1, "First claim should return the due reminder once");
+    assert!(second_claim.is_empty(), "Second claim should be idempotent");
+}
+
+#[tokio::test]
+#[serial]
+async fn test_claim_due_reminders_survives_restart() {
+    let temp_dir = tempdir().expect("Failed to create temp dir");
+    let db_path = temp_dir.path().join("reminder_restart.db");
+
+    {
+        let db = Database::new(&db_path).expect("Failed to create persistent test database");
+        let reminder = ReminderFactory::create_task_reminder();
+
+        create_reminder(reminder, tauri::State::new(db))
+            .await
+            .expect("Failed to seed reminder");
+    }
+
+    {
+        let db = Database::new(&db_path).expect("Failed to reopen persistent test database");
+        let first_claim = rehydrate_pending_reminders(tauri::State::new(db))
+            .await
+            .expect("Failed to rehydrate reminders");
+
+        assert_eq!(first_claim.len(), 1, "Startup rehydration should claim the pending reminder once");
+    }
+
+    let db = Database::new(&db_path).expect("Failed to reopen persistent test database for duplicate check");
+    let duplicate_claim = rehydrate_pending_reminders(tauri::State::new(db))
+        .await
+        .expect("Failed to run duplicate rehydration");
+
+    assert!(duplicate_claim.is_empty(), "Already claimed reminders should not re-fire after restart");
+}
+
+#[tokio::test]
+#[serial]
+async fn test_claim_due_reminders_excludes_dismissed_items() {
+    let db = setup_test_db();
+
+    let dismissed_reminder = ReminderFactory::create_dismissed_reminder();
+    create_reminder(dismissed_reminder, tauri::State::new(db.clone()))
+        .await
+        .expect("Failed to create dismissed reminder");
+
+    let active_reminder = ReminderFactory::create_event_reminder();
+    create_reminder(active_reminder, tauri::State::new(db.clone()))
+        .await
+        .expect("Failed to create active reminder");
+
+    let claimed = claim_due_reminders(
+        Some("2024-01-18 00:00:00".to_string()),
+        tauri::State::new(db),
+    )
+    .await
+    .expect("Failed to claim due reminders");
+
+    assert_eq!(claimed.len(), 1, "Dismissed reminders should never re-fire");
+    assert_eq!(claimed[0].item_type, "EVENT");
+    assert!(!claimed[0].is_dismissed, "Claimed reminder should be active");
 }

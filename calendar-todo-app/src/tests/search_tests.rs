@@ -6,7 +6,7 @@ use serial_test::serial;
 async fn setup_test_db() -> Database {
     let temp_dir = tempdir().unwrap();
     let db_path = temp_dir.path().join("test_search.db");
-    Database::new(db_path.to_str().unwrap()).unwrap()
+    Database::new(db_path).unwrap()
 }
 
 fn create_test_data(db: &Database) -> Result<(), String> {
@@ -593,4 +593,30 @@ async fn test_search_result_field_mapping() {
             assert!(category_id > 0);
         }
     }
+}
+
+#[tokio::test]
+#[serial]
+async fn test_search_fts_index_is_created() {
+    let db = Database::new_in_memory().expect("Failed to create test database");
+    let conn = db.get_connection();
+
+    let index_exists: Option<String> = conn
+        .query_row(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'search_index'",
+            [],
+            |row| row.get(0),
+        )
+        .ok();
+
+    assert!(index_exists.is_some(), "FTS search_index table should be present");
+
+    conn.execute(
+        "INSERT INTO events (title, description, start_time, end_time, is_all_day, priority) VALUES (?, ?, ?, ?, ?, ?)",
+        ["Garden planning", "Build the community garden schedule and herb rows", "2024-02-01 09:00:00", "2024-02-01 10:00:00", 0, 2],
+    ).unwrap();
+
+    let state = tauri::State::from(&db);
+    let results = search_all("garden".to_string(), state).await.unwrap();
+    assert!(results.iter().any(|result| result.item_type == "EVENT" && result.title == "Garden planning"));
 }

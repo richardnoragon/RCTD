@@ -167,6 +167,76 @@ cargo test query_optimization_tests -- --nocapture
 
 This suite uses `EXPLAIN QUERY PLAN` to verify index usage on event-range and task-order/status hot-path queries.
 
+## Reminder Scheduling Resilience (Issue #1)
+
+Reminder delivery now persists a delivery log so a reminder claims each UTC trigger once, survives restart rehydration, and respects dismissed-state checks.
+
+Relevant files:
+
+- `src/services/reminder_service.rs`
+- `src/tests/reminder_tests.rs`
+- `migrations/001_initial_schema.sql`
+
+Validation workflow:
+
+```sh
+cd calendar-todo-app
+cargo test reminder_tests -- --nocapture
+```
+
+Expected results:
+
+- Duplicate claim attempts return no second firing.
+- Restart rehydration only claims reminders that have not already been delivered.
+- Dismissed reminders remain suppressed.
+
+## Performance Regression Suite (Issue #10)
+
+The regression suite combines the UI and backend hot-path checks into one repeatable runner and writes trend-friendly artifacts under `results/integration/performance`.
+
+Relevant files:
+
+- `scripts/integration/performance/run_regression_suite.js`
+- `tests/integration/reports/performance_regression_suite.md`
+
+Local execution:
+
+```sh
+cd calendar-todo-app
+npm run perf:regression
+```
+
+Generated outputs:
+
+- `results/integration/performance/results_summary.json`
+- `results/integration/performance/results_summary.md`
+- `logs/integration/performance/*.log`
+
+Pass criteria:
+
+1. Every scenario exits cleanly.
+2. Every scenario stays within its configured duration budget.
+3. Any budget breach is treated as a regression and surfaced in the summary.
+
+## SQLite FTS Search Path (Issue #9)
+
+The backend now builds a `search_index` FTS5 table during database initialization and keeps it synchronized with events, tasks, and notes through triggers. Search commands use the FTS path when available and fall back to the legacy `LIKE` path on SQLite builds that do not expose FTS5.
+
+Relevant files:
+
+- `src/db/mod.rs`
+- `src/services/search_service.rs`
+- `src/tests/search_tests.rs`
+
+Validation workflow:
+
+```sh
+cd calendar-todo-app
+cargo test search_tests -- --nocapture
+```
+
+The key regression check asserts that `search_index` exists in the test database and that inserted content is returned by `search_all`.
+
 ## Startup Cold-Path Optimization (Issue #7)
 
 The frontend now defers non-critical task bootstrap until the browser idle phase and logs startup timing milestones for shell readiness and task hydration. The app shell therefore renders before background task hydration begins, reducing perceived startup latency without blocking navigation.
@@ -186,6 +256,25 @@ npm run startup:check
 ```
 
 The startup budget script validates current startup thresholds against a benchmark snapshot and writes `dist/startup-budget-report.json`.
+
+## UI Virtualization for Dense Views (Issue #8)
+
+Dense task lists now render through a lightweight windowed virtualization layer to cap the actual DOM nodes created for large result sets. This reduces render pressure for long task lists without changing filter/sort behavior or task interactions.
+
+Relevant files:
+
+- `ui/src/components/tasks/TaskListView.tsx`
+- `ui/src/components/tasks/Tasks.css`
+- `ui/src/components/tasks/TaskListView.test.tsx`
+
+Validation workflow:
+
+```sh
+cd calendar-todo-app/ui
+npx jest src/components/tasks/TaskListView.test.tsx --runInBand --watch=false
+```
+
+Expected outcome: the dense-list regression test ensures only a bounded subset of tasks is rendered at once while search, status filtering, and sorting still work.
 
 ## Production Build
 

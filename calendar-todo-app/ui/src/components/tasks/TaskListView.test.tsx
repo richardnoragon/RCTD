@@ -215,6 +215,34 @@ describe('TaskListView Component', () => {
       expect(screen.queryByTestId('task-card-3')).not.toBeInTheDocument();
     });
 
+    it('should virtualize dense task lists to keep render volume bounded', async () => {
+      const manyTasks: Task[] = Array.from({ length: 250 }, (_, index) => ({
+        id: index + 1,
+        title: `Task ${index + 1}`,
+        description: `Description ${index + 1}`,
+        priority: (index % 5) + 1,
+        status: index % 2 === 0 ? 'PENDING' : 'IN_PROGRESS',
+        due_date: `2024-01-${String((index % 28) + 1).padStart(2, '0')}`,
+      }));
+
+      (globalThis as any).setMockResponse('get_tasks', manyTasks);
+
+      const { container } = render(
+        <TaskListView 
+          onTaskUpdate={mockOnTaskUpdate} 
+          onTaskDelete={mockOnTaskDelete} 
+        />
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Task 1')).toBeInTheDocument();
+      });
+
+      const virtualizedList = container.querySelector('.task-list');
+      expect(virtualizedList).not.toBeNull();
+      expect(virtualizedList?.querySelectorAll('[data-testid^="task-card-"]').length).toBeLessThan(80);
+    });
+
     it('should filter tasks by status (All/Pending/In Progress/Completed)', async () => {
       (globalThis as any).setMockResponse('get_tasks', mockTasks);
 
